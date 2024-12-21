@@ -16,7 +16,7 @@ jobs:
     - name: FTP Deploy
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ftp://366841.w41.wedos.net
+        server: 366841.w41.wedos.net
         username: w366841
         password: ${{ secrets.FTP_PASSWORD }}
         server-dir: /www/domains/autoservis.paaja.cz/  # Cíl na vašem Wedos hostingu
