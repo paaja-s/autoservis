@@ -1,0 +1,22 @@
+name: Deploy to Wedos FTP
+
+on:
+  push:
+    branches:
+      - main  # Spouštějte akci pouze při pushi na hlavní větev
+
+jobs:
+  ftp-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v3
+
+    - name: FTP Deploy
+      uses: SamKirkland/FTP-Deploy-Action@v4
+      with:
+        server: ftp://366841.w41.wedos.net
+        username: w366841
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: /www/domains/autoservis.paaja.cz  # Cíl na vašem Wedos hostingu
