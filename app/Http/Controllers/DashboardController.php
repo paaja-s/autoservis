@@ -20,7 +20,8 @@ class DashboardController extends Controller
 	public function index()
 	{
 		// Načtení prehledu vozidel, zprav a dalsich
-		$customers = User::where('admin', 0)->get();
+		$tenant = app('TenantManager')->getTenant();
+		$customers = User::where('admin', 0)->where('tenant_id', $tenant?->id)->get();
 		$cars = $this->carService->getAccessibleCars();
 		$firstCarId = $cars->first()->id ?? null;
 		

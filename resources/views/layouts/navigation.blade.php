@@ -27,7 +27,7 @@
 				@endadmin
 				
 				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-					<x-nav-link :href="route('cars.index', ['user' => $user])" :active="request()->is('cars/*')">
+					<x-nav-link :href="route('cars.index')" :active="request()->is('cars/*')">
 						Vozy
 					</x-nav-link>
 				</div>

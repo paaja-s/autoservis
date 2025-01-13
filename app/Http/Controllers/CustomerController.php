@@ -10,7 +10,9 @@ class CustomerController extends Controller
 	public function index()
 	{
 		//$customers = User::where('admin', User::ROLE_CUSTOMER);
-		$customers = User::where('admin', 0)->get();
+		$tenant = app('TenantManager')->getTenant();
+		$customers = User::where('admin', 0)->where('tenant_id', $tenant->id)->get();
+		//$customers = User::where([['admin','=', 0],['tenant_id', '=', $tenant->id]])->get();
 		//$customers = User::all();
 		
 		// Vrácení přehledu s vozidly

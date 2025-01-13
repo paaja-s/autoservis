@@ -30,17 +30,24 @@
 				<!-- Ikony -->
 				<div class="flex space-x-3">
 					<!-- Ikona Editovat -->
-					<a href="{{ route('cars.edit', [$user, $car]) }}" class="text-blue-500 hover:text-blue-700">
+					@admin
+					<a href="{{ route('cars.user.car.edit', [$user, $car]) }}" class="text-blue-500 hover:text-blue-700">
 						<i class="fas fa-edit"></i> Editovat
 					</a>
+					@endadmin
+					@customer
+					<a href="{{ route('cars.edit', [$car]) }}" class="text-blue-500 hover:text-blue-700">
+						<i class="fas fa-edit"></i> Editovat
+					</a>
+					@endcustomer
 					
 					<!-- Ikona Zprávy -->
-					<a href="{{ route('cars.messages', $car->id) }}" class="text-green-500 hover:text-green-700">
+					<a href="{{ route('cars.messages', $car) }}" class="text-green-500 hover:text-green-700">
 					<i class="fas fa-envelope"></i> Zprávy
 					</a>
 					
 					<!-- Ikona Smazat -->
-					<form action="{{ route('cars.destroy', [$user, $car]) }}" method="POST" onsubmit="return confirm('Opravdu chcete tento vůz smazat?');">
+					<form action="{{ route('cars.user.car.destroy', [$user, $car]) }}" method="POST" onsubmit="return confirm('Opravdu chcete tento vůz smazat?');">
 						@csrf
 						@method('DELETE')
 						<button type="submit" class="text-red-500 hover:text-red-700">

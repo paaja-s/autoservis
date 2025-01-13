@@ -8,6 +8,35 @@ use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
+	public function index(Car $car)
+	{
+		Log::debug(__METHOD__.($carId?' CAR:'.$carId:' No car'));
+		// Načti auta aktuálně přihlášeného uživatele
+		$cars = $this->carService->getAccessibleCars();
+		
+		//$cars = Car::where('user_id', auth()->id())->orderBy('id')->get();
+		
+		// Pokud není specifikováno ID, vyber první auto
+		$selectedCar = $carId ? $cars->find($carId) : $cars->first();
+		
+		if (!$selectedCar) {
+			
+			abort(404, 'Car not found');
+		}
+		
+		// Načti zprávy pro vybrané auto
+		$messages = Message::where('car_id', $selectedCar->id)->orderBy('created_at', 'desc')->get();
+		
+		// Najdi předchozí a další auto
+		$currentIndex = $cars->search(function ($car) use ($selectedCar) {
+			return $car->id === $selectedCar->id;
+		});
+			
+		$prevCar = $cars->get($currentIndex - 1);
+		$nextCar = $cars->get($currentIndex + 1);
+		
+		return view('messages.index', compact('cars', 'selectedCar', 'messages', 'prevCar', 'nextCar'));
+	}
 	// Formulář pro vytvoření nové zprávy
 	public function create(Car $car)
 	{

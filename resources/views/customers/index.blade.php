@@ -12,17 +12,16 @@
 				<div class = "bg-white block px-4 py-6 border border-grey-200 rounded-lg flex justify-between items-center">
 					{{$customer['name']}}
 				
-				
 				<!-- Ikony -->
 				<div class="flex space-x-3">
 					
 					<!-- Ikona Vozidla -->
-					<a href="{{ route('cars.index', $customer->id) }}" class="text-green-500 hover:text-green-700">
+					<a href="{{ route('cars.user.index', $customer->id) }}" class="text-green-500 hover:text-green-700">
 					<i class="fas fa-envelope"></i> Vozidla
 					</a>
 					
 					<!-- Pridat vozidlo -->
-					<a href="{{ route('cars.create', $customer->id) }}" class="text-green-500 hover:text-green-700">
+					<a href="{{ route('cars.user.create', $customer->id) }}" class="text-green-500 hover:text-green-700">
 					<i class="fas fa-envelope"></i> Přidat vozidlo
 					</a>
 					
@@ -31,7 +30,7 @@
 						<i class="fas fa-edit"></i> Editovat
 					</a>
 					<!-- Ikona Smazat -->
-					<form action="{{ route ('customers', $customer->id) }}" method="POST" onsubmit="return confirm('Opravdu chcete tohoto zákazníka smazat?');">
+					<form action="{{ route('customers.destroy', $customer->id) }}" method="POST" onsubmit="return confirm('Opravdu chcete tohoto zákazníka smazat?');">
 						@csrf
 						@method('DELETE')
 						<button type="submit" class="text-red-500 hover:text-red-700">

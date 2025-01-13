@@ -21,6 +21,7 @@ return new class extends Migration
 			$table->string('manufacturer'); // Vyrobce vozu
 			$table->string('model'); // Model vozu
 			$table->string('vin')->unique(); // VIN, unikatni
+			$table->string('ctp')->unique(); // Cislo technickeho prukazu, unikatni
 			$table->string('registration')->unique(); // Registracni znacka, unkatni
 			$table->integer('stk')->default(0); // Kontrolovat STK?
 			$table->integer('emission')->default(0); // Kontrolovat emise?

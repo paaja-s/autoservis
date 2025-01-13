@@ -5,7 +5,12 @@
 		</h2>
 	</x-slot>
 	
-	<form method="POST" action="{{ route('cars.update' , [$user, $car] ) }}">
+	@admin
+	<form method="POST" action="{{ route('cars.user.car.update', [$user, $car] ) }}">
+	@endadmin
+	@customer
+	<form method="POST" action="{{ route('cars.update', [$car] ) }}">
+	@endcustomer
 		@csrf
 		@method('PATCH')
 		

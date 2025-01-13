@@ -123,4 +123,14 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+	/*
+	 * Administration domain (ADMIN_DOMAIN origins in .env file)
+	 */
+	'admin_domain' => env('ADMIN_DOMAIN', 'autoservis.paaja.cz'),
+	
+	/*'providers' => [
+		//App\Providers\RouteServiceProvider::class,
+		App\Providers\AppServiceProvider::class,
+		Illuminate\Filesystem\FilesystemServiceProvider::class,
+	],*/
 ];

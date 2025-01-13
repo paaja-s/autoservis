@@ -37,6 +37,7 @@ class Kernel extends HttpKernel
 		],
 		
 		'api' => [
+			\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
 			'throttle:api',
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 		],
@@ -50,6 +51,7 @@ class Kernel extends HttpKernel
 	protected $routeMiddleware = [
 		'auth' => \App\Http\Middleware\Authenticate::class,
 		'admin' => \App\Http\Middleware\AdminMiddleware::class,
+		'technician' => \App\Http\Middleware\TechnicianMiddleware::class,
 		'customer' => \App\Http\Middleware\CustomerMiddleware::class,
 		'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
