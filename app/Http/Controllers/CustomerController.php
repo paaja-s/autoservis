@@ -37,7 +37,7 @@ class CustomerController extends Controller
 		
 		$user->name = $validated['name'];
 		$user->email = $validated['email'];
-		$user->save;
+		$user->save();
 		
 		return redirect()->route('customers');
 	}

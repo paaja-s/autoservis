@@ -18,6 +18,14 @@
 					</x-nav-link>
 				</div>
 				
+				@superadmin
+				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+					<x-nav-link :href="route('tenants')" :active="request()->is('tenants*')">
+						Tenanti
+					</x-nav-link>
+				</div>
+				@endsuperadmin
+				
 				@admin
 				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
 					<x-nav-link :href="route('customers')" :active="request()->is('customers*')">
@@ -26,17 +34,19 @@
 				</div>
 				@endadmin
 				
+				@notsuperadmin
 				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
 					<x-nav-link :href="route('cars.index')" :active="request()->is('cars/*')">
 						Vozy
 					</x-nav-link>
 				</div>
-
+				
 				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
 					<x-nav-link :href="route('cars.messages', ['car' => $firstCarId ?? null])" :active="request()->is('cars/messages*')">
 						Zprávy
 					</x-nav-link>
 				</div>
+				@endnotsuperadmin
 				
 				@admin
 				<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">

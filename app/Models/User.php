@@ -50,7 +50,16 @@ class User extends Authenticatable
 		'password',
 		'remember_token',
 	];
-
+	
+	/**
+	 * Check if user is superadmin
+	 */
+	public function isSuperadmin()
+	{
+		//Log::debug(__METHOD__.' ROLE ID: '.$this->role?->id);
+		return $this->role?->id === self::ROLE_SUPERADMIN;
+	}
+	
 	/**
 	* Check if user is admin
 	*/

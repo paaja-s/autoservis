@@ -50,9 +50,12 @@ class Kernel extends HttpKernel
 	 */
 	protected $routeMiddleware = [
 		'auth' => \App\Http\Middleware\Authenticate::class,
+		
+		'superadmin' => \App\Http\Middleware\SuperadminMiddleware::class,
 		'admin' => \App\Http\Middleware\AdminMiddleware::class,
 		'technician' => \App\Http\Middleware\TechnicianMiddleware::class,
 		'customer' => \App\Http\Middleware\CustomerMiddleware::class,
+		
 		'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,

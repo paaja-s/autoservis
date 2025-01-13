@@ -5,8 +5,10 @@ use App\Http\Controllers\CarController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TenantController;
+//use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\SuperadminMiddleware;
 use App\Http\Middleware\VerifyCarAccess;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -81,17 +83,16 @@ Route::middleware([TenantMiddleware::class, 'auth', 'verified'])->group(function
 	Route::get('/administration', [AdministrationController::class, 'edit'])->name('administration.edit');
 	Route::put('/administration', [AdministrationController::class, 'update'])->name('administration.update');
 	
-	/*
-	TODO Administrace pro superadmina
-	Route::middleware('superadmin')->group(function () {
-		Route::get('tenants', [TenantController::class, 'index'])->name('tenants.index');
+	//TODO Administrace pro superadmina
+	Route::middleware(SuperadminMiddleware::class)->group(function () {
+		Route::get('tenants', [TenantController::class, 'index'])->name('tenants');
 		Route::get('tenants/create', [TenantController::class, 'create'])->name('tenants.create');
 		Route::post('tenants/store', [TenantController::class, 'store'])->name('tenants.store');
-		Route::get('tenants/{car}/edit', [TenantController::class, 'edit'])->name('tenants.edit');
-		Route::patch('tenants/{car}', [TenantController::class, 'update'])->name('tenants.update');
-		Route::delete('tenants/{car}', [TenantController::class, 'destroy'])->name('tenants.destroy');
+		Route::get('tenants/{tenant}', [TenantController::class, 'edit'])->name('tenants.edit');
+		Route::patch('tenants/{tenant}', [TenantController::class, 'update'])->name('tenants.update');
+		Route::delete('tenants/{tenant}', [TenantController::class, 'destroy'])->name('tenants.destroy');
 	});
-	*/
+	
 });
 /*
 Route::middleware(['auth', AdminMiddleware::class])->group(function () {	
