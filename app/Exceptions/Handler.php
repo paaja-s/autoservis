@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
@@ -21,34 +22,33 @@ class Handler extends ExceptionHandler
 	/**
 	 * Render an exception into an HTTP response.
 	 */
-	public function render($request, Throwable $exception): JsonResponse
+	public function render($request, Throwable $exception)
 	{
-		Log::debug(__METHOD__.' ERROR:'.$exception->getMessage());
-		// Pokud se jedná o API požadavek
+		Log::debug('ERROR:'.$exception->getMessage());
+		
+		// Ověření, zda je to API požadavek
 		if ($request->expectsJson()) {
-			// Výchozí chybový status a zpráva
-			$statusCode = $this->getStatusCode($exception);
-			$message = $exception->getMessage() ?: 'An error occurred.';
-			
 			return response()->json([
-				'success' => false,
-				'message' => $message,
-			], $statusCode);
+				'error' => $exception->getMessage(),
+				'trace' => config('app.debug') ? $exception->getTrace() : [],
+			], $this->getStatusCode($exception));
 		}
 		
-		// Pokud není API požadavek, vrať výchozí chování
 		return parent::render($request, $exception);
 	}
 	
-	/**
-	 * Získání HTTP status kódu z výjimky.
-	 */
-	private function getStatusCode(Throwable $exception): int
+	// Pomocná metoda pro získání správného status kódu
+	protected function getStatusCode(Throwable $exception)
 	{
-		if (method_exists($exception, 'getStatusCode')) {
-			return $exception->getStatusCode();
-		}
-		
-		return 500; // Výchozí status 500 (Internal Server Error)
+		return method_exists($exception, 'getStatusCode')
+		? $exception->getStatusCode()
+		: 500;
+	}
+	
+	protected function unauthenticated($request, AuthenticationException $exception)
+	{
+		return $request->expectsJson()
+		? response()->json(['message' => 'Unauthenticated.'], 401)
+		: redirect()->guest(route('login'));
 	}
 }

@@ -15,6 +15,20 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\TenantMiddleware;
 use App\Http\Middleware\CustomerMiddleware;
 
+
+// autoservis.paaja.cz/api/debug-db-url
+Route::get('/debug-db-url', function () {
+	return [
+		'DB_URL' => env('DB_URL'),
+		'config_database_url' => config('database.connections.sqlite.url'),
+	];
+});
+
+Route::get('/sanctum/csrf-cookie', function () {
+	Log::info('CSRF cookie route hit');
+	return response()->json(['message' => 'CSRF endpoint dostupný']);
+});
+
 Route::middleware([TenantMiddleware::class])->group(function () {
 	Route::get('/', function () {
 		$tenant = app('TenantManager')->getTenant();
@@ -71,7 +85,7 @@ Route::middleware([TenantMiddleware::class, 'auth', 'verified'])->group(function
 		Route::delete('/messages/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
 	});
 	Route::middleware('customer')->group(function () {
-		Route::get('/messages/{car}/index', [MessageController::class, 'index'])->name('messages.index');
+		Route::get('/messages/{car}/index', [MessageController::class, 'index'])->name('messages.user.index');
 	});
 	
 	// Profile

@@ -35,16 +35,21 @@ return [
     |
     */
 
-    'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
-    	'api' => [
-    		'driver' => 'sanctum',
-    		'provider' => 'users',
-    	],
-    ],
+	'guards' => [
+		'web' => [
+			'driver' => 'session',
+			'provider' => 'users',
+		],
+		'api' => [
+			'driver' => 'token',
+			'provider' => 'users',
+			'hash' => false,
+		],
+		'sanctum' => [
+			'driver' => 'session',
+			'provider' => 'users',
+		],
+	],
 
     /*
     |--------------------------------------------------------------------------

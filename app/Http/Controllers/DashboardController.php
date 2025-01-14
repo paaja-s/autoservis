@@ -21,7 +21,7 @@ class DashboardController extends Controller
 	{
 		// Načtení prehledu vozidel, zprav a dalsich
 		$tenant = app('TenantManager')->getTenant();
-		$customers = User::where('admin', 0)->where('tenant_id', $tenant?->id)->get();
+		$customers = User::where('last_role_id', 4)->where('tenant_id', $tenant?->id)->get();
 		$cars = $this->carService->getAccessibleCars();
 		$firstCarId = $cars->first()->id ?? null;
 		

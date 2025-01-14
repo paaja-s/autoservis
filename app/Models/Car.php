@@ -40,12 +40,4 @@ class Car extends Model
 		->first()?->odo;
 	}
 	
-	protected static function boot()
-	{
-		parent::boot();
-		
-		static::creating(function ($model) {
-			$model->uuid = Str::uuid()->toString();
-		});
-	}
 }

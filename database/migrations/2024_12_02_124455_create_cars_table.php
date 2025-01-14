@@ -16,7 +16,7 @@ return new class extends Migration
 	{
 		Schema::create('cars', function (Blueprint $table) {
 			$table->id();
-			$table->uuid('uuid')->unique(); // UUID (unikátní identifikátor)
+			//$table->uuid('uuid')->unique(); // UUID (unikátní identifikátor)
 			$table->foreignIdFor(User::class)->onDelete('cascade'); // Vazba na uzivatele
 			$table->string('manufacturer'); // Vyrobce vozu
 			$table->string('model'); // Model vozu

@@ -113,13 +113,5 @@ class User extends Authenticatable
 			'password' => 'hashed',
 		];
 	}
-
-	protected static function boot()
-	{
-		parent::boot();
-		
-		//static::creating(function ($model) {
-		//	$model->uuid = Str::uuid()->toString();
-		//});
-	}
+	
 }

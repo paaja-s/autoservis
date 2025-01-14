@@ -3,13 +3,14 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CarController;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\DebugMiddleware;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::middleware(['web'])->group(function () { // Je treba CSRF token z GET /sanctum/csrf-cookie
 	Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware([DebugMiddleware::class, 'auth:sanctum' ])->group(function () {
 	Route::get('/user', [AuthController::class, 'user']);
 	Route::post('/user/role', [AuthController::class, 'setRole']);
 	Route::post('/logout', [AuthController::class, 'logout']);

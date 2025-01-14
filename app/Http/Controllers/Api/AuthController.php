@@ -67,6 +67,7 @@ class AuthController extends Controller
 	
 	public function user(Request $request)
 	{
+		Log::debug(__METHOD__);
 		//return response()->json($request->user());
 		$user = $request->user();
 		return response()->json([
