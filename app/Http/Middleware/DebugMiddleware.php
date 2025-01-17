@@ -9,7 +9,7 @@ class DebugMiddleware
 {
 	public function handle($request, Closure $next)
 	{
-		Log:debug('Request Debug:', [
+		Log::debug('Request Debug:', [
 			'url' => $request->url(),
 			'method' => $request->method(),
 			'headers' => $request->headers->all(),

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\RoleEnum;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -15,22 +16,16 @@ class UserSeeder extends Seeder
 	public function run(): void
 	{
 		// Pouzite role
-		$roleSa = Role::factory()->create(
-			[
-				'name' =>'Superadmin',
-			]);
-		$roleA = Role::factory()->create(
-			[
-				'name' =>'Admin',
-			]);
-		$roleT = Role::factory()->create(
-			[
-				'name' =>'Technician',
-			]);
-		$roleC = Role::factory()->create(
-			[
-				'name' =>'Customer',
-			]);
+		foreach (RoleEnum::cases() as $role) {
+			\DB::table('roles')->updateOrInsert(
+				['id' => $role->value],
+				['name' => $role->label()]
+				);
+		}
+		$roleSa = RoleEnum::Superadmin->value;
+		$roleA = RoleEnum::Admin->value;
+		$roleT = RoleEnum::Technician->value;
+		$roleC = RoleEnum::Customer->value;
 		
 		// Superadmin, nema tenanta
 		$userSa = User::factory()->create([

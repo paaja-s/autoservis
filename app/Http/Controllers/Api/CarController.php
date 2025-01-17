@@ -38,11 +38,13 @@ class CarController extends Controller
 	// Data pro form pro tvorbu (pridani) noveho vozu
 	public function create(Request $request, ?User $user = null)
 	{
+		// TODO Autorizace prav k autu
+		
 		// Získání uživatele přes službu
 		$user = $this->carService->getUser($user);
 		
 		$car = Car::factory()->create([
-			'uuid' => Str::uuid()->toString(),
+			//'uuid' => Str::uuid()->toString(),
 			'user_id' => $user->id,
 			'manufacturer' =>'',
 			'model' =>'',
@@ -59,6 +61,8 @@ class CarController extends Controller
 	
 	public function store(Request $request, ?User $user = null)
 	{
+		// TODO Autorizace prav k autu
+		
 		// Získání uživatele přes službu
 		$user = $this->carService->getUser($user);
 		
@@ -68,7 +72,7 @@ class CarController extends Controller
 				'manufacturer' => ['required', 'min:1'],
 				'model' => ['required', 'min:1'],
 				'vin' => ['required', 'min:1'],
-				'ctp' => ['required'],
+				'ctp' => ['required', 'min:5'],
 				'registration'  => ['required', 'min:7'],
 				'stk' => ['nullable', 'boolean'],
 				'emission'  => ['nullable', 'boolean'],
@@ -93,21 +97,18 @@ class CarController extends Controller
 	
 	public function edit(Request $request, User $user, Car $car)
 	{
-		// Získání uživatele přes službu
-		//$user = $this->carService->getUser($user);
-		
-		// TODO overeni zda ma prihlaseny uzivatel na toto pravo (editovat neci vozidlo)?
+		// TODO Autorizace prav k autu
 		
 		return response()->json($car);
 	}
 	
 	public function update(Request $request, User $user, Car $car)
 	{
-		Log::debug(__METHOD__.' USER:'.$user->id.' CAR:'.$car->id);
-		// Authorize TODO
+		// TODO Autorizace prav k autu
+		//Log::debug(__METHOD__.' USER:'.$user->id.' CAR:'.$car->id);
 		
 		// Zmeni vuz (obsluha formu editace vozu)
-		$request()->validate(
+		request()->validate(
 			[
 				'manufacturer' => ['required', 'min:3'],
 				'model' => ['required', 'min:1'],
@@ -123,9 +124,14 @@ class CarController extends Controller
 		$car->manufacturer = request('manufacturer');
 		$car->model = request('model');
 		$car->vin = request('vin');
+		$car->ctp = request('ctp');
 		$car->registration = request('registration');
-		$car->stk = request()->has('stk') ? 1 : 0;
-		$car->emission = request()->has('emission') ? 1 : 0;
+		if(request()->has('stk')) {
+			$car->stk = request('stk') ? 1 : 0;
+		}
+		if( request()->has('emission')) {
+			$car->emission = request('emission') ? 1 : 0;
+		}
 		$car->save();
 		
 		//return response()->json(['message' => 'Car updated successfully']);
@@ -134,9 +140,13 @@ class CarController extends Controller
 	
 	public function destroy(Request $request, User $user, Car $car)
 	{
-		// Smaze vuz (obsluha skryteho formu delete-form v indexu vozu)
-		$car->delete();
+		// TODO Autorizace prav k autu
 		
-		return response()->json(['message' => 'Car deleted successfully']);
+		// Vuz se nemaze, jen se prevede do stavu archivu
+		//$car->delete();
+		$car->active = 2;
+		$car->save();
+		
+		return response()->json(['message' => 'Car is archived']);
 	}
 }

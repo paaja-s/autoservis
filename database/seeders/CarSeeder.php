@@ -15,7 +15,7 @@ class CarSeeder extends Seeder
 	{
 		// Uzivatel Radek, admin 1
 		Car::factory()->create([
-			'uuid' => Str::uuid()->toString(),
+			//'uuid' => Str::uuid()->toString(),
 			'user_id' => 2,
 			'manufacturer' =>'Škoda',
 			'model' =>'Octavia II',
@@ -28,7 +28,7 @@ class CarSeeder extends Seeder
 		]);
 		// Zakaznik 1 tenantu 1
 		Car::factory()->create([
-			'uuid' => Str::uuid()->toString(),
+			//'uuid' => Str::uuid()->toString(),
 			'user_id' => 3,
 			'manufacturer' =>'VolksWagen',
 			'model' =>'Golf IV',
@@ -41,7 +41,7 @@ class CarSeeder extends Seeder
 		]);
 		// Zakaznik 1 tenantu 1
 		Car::factory()->create([
-			'uuid' => Str::uuid()->toString(),
+			//'uuid' => Str::uuid()->toString(),
 			'user_id' => 3,
 			'manufacturer' =>'Triumph',
 			'model' =>'Spitfire',

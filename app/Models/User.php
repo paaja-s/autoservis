@@ -6,9 +6,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
+use App\Enums\RoleEnum;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -99,6 +100,11 @@ class User extends Authenticatable
 	public function role()
 	{
 		return $this->belongsTo(Role::class, 'last_role_id');
+	}
+	
+	public function getRoleEnum(): ?RoleEnum
+	{
+		return RoleEnum::tryFrom($this->role->id);
 	}
 
 	/**

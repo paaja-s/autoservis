@@ -18,7 +18,7 @@ class CarFactory extends Factory
 	public function definition(): array
 	{
 		return [
-			'uuid' => Str::uuid()->toString(),
+			//'uuid' => Str::uuid()->toString(),
 			'manufacturer' =>'',
 			'model' =>'',
 			'vin' => '',

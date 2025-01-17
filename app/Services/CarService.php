@@ -10,10 +10,11 @@ class CarService
 {
 	public function getAccessibleCars(?User $user = null)
 	{
-		Log::debug(__METHOD__.($user?' User '.$user->id:' No user'));
+		//Log::debug(__METHOD__.($user?' User '.$user->id:' No user'));
 		$user = $this->getUser($user);
 		// I admin dostane jen svoje vozidla, na zakaznicka se diva prostrednictvim volby zakaznika
-		return $user->cars()->with(['messages.odo'])->get();
+		return $user->cars()->get();
+		//return $user->cars()->with(['messages.odo'])->get();
 	}
 	
 	/**
