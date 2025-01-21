@@ -12,6 +12,13 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Log\Logger;
 
+/**
+ * @OA\Info(
+ *     title="Autoservis API",
+ *     version="1.0.0",
+ *     description="API for managing user login, logout, info"
+ * )
+ */
 class AuthController extends Controller
 {
 	public function register(Request $request)
@@ -31,6 +38,25 @@ class AuthController extends Controller
 		return response()->json(['user' => $user], 201);
 	}
 	
+	/**
+	 * @OA\Post(
+	 * 	path="/api/login",
+	 * 		operationId="loginUser",
+	 *     tags={"User"},
+	 *     summary="Login user",
+	 *     description="Returns the authorization token",
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="Successful response",
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="token", type="string", example="7|bhke6eMJJI5Tx1UpUXqOXEXuiwT18vkK3hpFrxVVbcc4d612"),
+	 *         )
+	 *     ),
+	 *     
+	 * )
+	 *
+	 * @param Request $request
+	 */
 	public function login(Request $request)
 	{
 		Log::debug(__METHOD__);
@@ -65,27 +91,96 @@ class AuthController extends Controller
 		return response()->json(['token' => $token], 200);
 	}
 	
+	/**
+	 * @OA\Get(
+	 * 	path="/api/user",
+	 * 		operationId="getUser",
+	 *     tags={"User"},
+	 *     summary="Get authenticated user information",
+	 *     description="Returns the authenticated user data",
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="Successful response",
+	 *         @OA\JsonContent(
+	 *             ref="#/components/schemas/User"
+	 *         )
+	 *     ),
+	 *      @OA\Response(
+	 *         response=401,
+	 *         description="Not authorized"
+	 *     )
+	 * )
+	 * 
+	 * @param Request $request
+	 */
 	public function user(Request $request)
 	{
-		Log::debug(__METHOD__);
-		//return response()->json($request->user());
-		$user = $request->user();
-		return response()->json([
-			'user' => $user,
-			'roles' => $user->roles, // Vrací seznam roli
-			// TODO vyresit prenos session, je to proste NULL
-			// Kvuli tomu je u loginu middleware 'web' a ziskavani CSRF tokenu z GET /sanctum/csrf-cookie
-			'current_role' => session('current_role'),
-		]);
+		return response()->json(Auth::user());
 	}
 	
-	public function logout(Request $request)
+	/**
+	 * @OA\Get(
+	 * 	path="/api/user/role",
+	 * 		operationId="getUserRole",
+	 *     tags={"User"},
+	 *     summary="Get authenticated user current role",
+	 *     description="Returns the authenticated user current roledata",
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="Successful response",
+	 *         @OA\JsonContent(
+	 *            ref="#/components/schemas/Role"
+	 *         )
+	 *     ),
+	 *      @OA\Response(
+	 *         response=401,
+	 *         description="Not authorized"
+	 *     )
+	 * )
+	 *
+	 * @param Request $request
+	 */
+	public function role(Request $request)
 	{
-		$request->user()->currentAccessToken()->delete();
-		
-		return response()->json(['message' => 'Logged out'], 200);
+		$user = Auth::user();
+		//$role = session('current_role'),
+		//$role = $user->role();
+		$role = Role::find($user->last_role_id);
+		return response()->json($role);
 	}
 	
+	/**
+	 * @OA\Get(
+	 *     path="/api/user/roles",
+	 *     summary="Get authenticated user assigned roles",
+	 *     description="Returns the authenticated user available roledata",
+	 *     operationId="getUserRoles",
+	 *     tags={"User"},
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="Successful response",
+	 *         @OA\JsonContent(
+	 *             type="array",
+	 *             @OA\Items(ref="#/components/schemas/Role")
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=401,
+	 *         description="Not authorized"
+	 *     )
+	 * )
+	 * 
+	 * @param Request $request
+	 */
+	public function roles(Request $request)
+	{
+		$user = Auth::user();
+		return response()->json($user->roles()->get());
+	}
+	
+	/*
+	 * Zmena role prihlaseneho uzivatele
+	 */
 	public function setRole(Request $request)
 	{
 		$user = $request->user();
@@ -94,9 +189,10 @@ class AuthController extends Controller
 			'role' => 'required|exists:roles,id',
 		]);
 		$role = Role::findOrFail($validated['role']);
-		//$role = $request->input('role'); // Předpokládáme, že přichází požadovaná role jako parametr
+		
 		Log::debug(__METHOD__.' ROLE ID: '.$role->id.' '.$user->roles);
-		// Ověření, zda má uživatel tuto roli
+		
+		// Ověření, zda má uživatel tuto roli vubec k dispozici
 		if (!$user->roles->contains('id', $role->id)) {
 			return response()->json(['error' => 'Unauthorized role'], 403);
 		}
@@ -108,6 +204,18 @@ class AuthController extends Controller
 		$user->last_role_id = $role->id;
 		$user->save();
 		
-		return response()->json(['message' => 'Role switched successfully', 'current_role' => $role->name]);
+		return response()->json($role);
+	}
+	
+	/**
+	 * 
+	 * @param Request $request
+	 * @return unknown
+	 */
+	public function logout(Request $request)
+	{
+		$request->user()->currentAccessToken()->delete();
+		
+		return response()->json(['message' => 'Logged out'], 200);
 	}
 }

@@ -1,0 +1,186 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Autoservis API",
+        "description": "API for managing user login, logout, info",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Login user",
+                "description": "Returns the authorization token",
+                "operationId": "loginUser",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "7|bhke6eMJJI5Tx1UpUXqOXEXuiwT18vkK3hpFrxVVbcc4d612"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get authenticated user information",
+                "description": "Returns the authenticated user data",
+                "operationId": "getUser",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/user/role": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get authenticated user current role",
+                "description": "Returns the authenticated user current roledata",
+                "operationId": "getUserRole",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Role"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/user/roles": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get authenticated user assigned roles",
+                "description": "Returns the authenticated user available roledata",
+                "operationId": "getUserRoles",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Role"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Role": {
+                "title": "Role",
+                "description": "User's role",
+                "properties": {
+                    "id": {
+                        "description": "ID role",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Název role",
+                        "type": "string",
+                        "example": "Admin"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "User",
+                "description": "User",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "tenant_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "last_role_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "admin@examle.com"
+                    },
+                    "email_verified_at": {
+                        "type": "data",
+                        "example": "2025-01-16T13:40:05.000000Z"
+                    },
+                    "active": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "data",
+                        "example": "2025-01-16T13:40:05.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "data",
+                        "example": "2025-01-16T13:40:05.000000Z"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "User",
+            "description": "User"
+        }
+    ]
+}

@@ -11,6 +11,23 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Enums\RoleEnum;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * @OA\Schema(
+ *     schema="User",
+ *     type="object",
+ *     title="User",
+ *     description="User",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="tenant_id", type="integer", example=1),
+ *     @OA\Property(property="last_role_id", type="integer", example=1),
+ *     @OA\Property(property="name", type="string", example="John Doe"),
+ *     @OA\Property(property="email", type="string", example="admin@examle.com"),
+ *     @OA\Property(property="email_verified_at", type="data", example="2025-01-16T13:40:05.000000Z"),
+ *     @OA\Property(property="active", type="integer", example=1),
+ *     @OA\Property(property="created_at", type="data", example="2025-01-16T13:40:05.000000Z"),
+ *     @OA\Property(property="updated_at", type="data", example="2025-01-16T13:40:05.000000Z"),
+ * )
+ */
 class User extends Authenticatable
 {
 	/** @use HasFactory<\Database\Factories\UserFactory> */

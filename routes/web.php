@@ -6,7 +6,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TenantController;
-//use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\SuperadminMiddleware;
 use App\Http\Middleware\VerifyCarAccess;

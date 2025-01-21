@@ -18,6 +18,8 @@ Route::middleware([TenantMiddleware::class, 'web'])->group(function () { // Je t
 Route::middleware([TenantMiddleware::class, EnsureFrontendRequestsAreStateful::class, 'auth:sanctum'])->group(function () {
 	Route::get('/user', [AuthController::class, 'user']);
 	Route::post('/user/role', [AuthController::class, 'setRole']);
+	Route::get('/user/role', [AuthController::class, 'role']);
+	Route::get('/user/roles', [AuthController::class, 'roles']);
 	Route::post('/logout', [AuthController::class, 'logout']);
 	
 	// CARS
