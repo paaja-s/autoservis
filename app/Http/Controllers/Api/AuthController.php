@@ -24,13 +24,17 @@ class AuthController extends Controller
 	public function register(Request $request)
 	{
 		$validated = $request->validate([
-			'name' => 'required|string|max:255',
+			'first_name'=> ['required', 'string', 'max:255'],
+			'last_name' => ['required', 'string', 'max:255'],
+			'phone' => ['string', 'min:5','max:10'],
 			'email' => 'required|string|email|max:255|unique:users',
 			'password' => 'required|string|min:8|confirmed',
 		]);
 		
 		$user = User::create([
-			'name' => $validated['name'],
+			'first_name' => $validated['first_name'],
+			'last_name' => $validated['last_name'],
+			'phone' => $validated['phone'],
 			'email' => $validated['email'],
 			'password' => Hash::make($validated['password']),
 		]);
@@ -178,8 +182,29 @@ class AuthController extends Controller
 		return response()->json($user->roles()->get());
 	}
 	
-	/*
+	/**
+	 * @OA\Post(
+	 *     path="/api/user/role",
+	 *     summary="Set role to user",
+	 *      description="Sets role to user and returns roledata",
+	 *      operationId="setRole",
+	 *      tags={"User"},
+	 *      @OA\Response(
+	 *         response=200,
+	 *         description="Successful response",
+	 *         @OA\JsonContent(
+	 *             type="array",
+	 *             @OA\Items(ref="#/components/schemas/Role")
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=403,
+	 *         description="Unauthorized role"
+	 *     )
+	 * )
+	 * 
 	 * Zmena role prihlaseneho uzivatele
+	 * @param Request $request
 	 */
 	public function setRole(Request $request)
 	{

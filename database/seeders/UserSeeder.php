@@ -29,14 +29,11 @@ class UserSeeder extends Seeder
 		
 		// Superadmin, nema tenanta
 		$userSa = User::factory()->create([
-			//'first_name' => 'Radek',
-			//'last_name' => 'Tuček',
+			'first_name' => 'Pavel',
+			'last_name' => 'Štys',
 			'tenant_id' => null,
-			'name' => 'Superadmin',
-			//'company' => 'Autoservis Tuček',
-			//'alias' => 'Radek',
 			'email' => 'admin@example.com',
-			//'phone' => '+420728332113',
+			'phone' => '+420776282302',
 			//'birth' => '1989-11-07',
 			'password' => 'zlato',
 			'active' => 1, // Aktivni
@@ -53,14 +50,11 @@ class UserSeeder extends Seeder
 		]);
 		// Admin tenantu 1 'A1'
 		$userA1 = User::factory()->create([
-			//'first_name' => 'Radek',
-			//'last_name' => 'Tuček',
+			'first_name' => 'Radek',
+			'last_name' => 'Tuček',
 			'tenant_id' => $tenant1,
-			'name' => 'Radek Tuček',
-			//'company' => 'Autoservis Tuček',
-			//'alias' => 'Radek',
 			'email' => 'tucek@example.com',
-			//'phone' => '+420728332113',
+			'phone' => '+420728332113',
 			//'birth' => '1989-11-07',
 			'password' => 'erteple',
 			'active' => 1, // Aktivni
@@ -73,14 +67,11 @@ class UserSeeder extends Seeder
 		
 		// Zakaznik tenantu 1 'C1'
 		$userC1 = User::factory()->create([
-			//'first_name' => 'Pavel',
-			//'last_name' => 'Štys',
+			'first_name' => 'Pavel',
+			'last_name' => 'Štys',
 			'tenant_id' => $tenant1,
-			'name' =>'Pavel Štys',
-			//'company' => 'Metal siblings',
-			//'alias' => 'paaja',
 			'email' => 'paaja_s@atlas.cz',
-			//'phone' => '+420776282302',
+			'phone' => '+420776282302',
 			//'birth' => '1978-06-04',
 			'password' => 'brambory',
 			'active' => 1, // Aktivni
@@ -91,14 +82,11 @@ class UserSeeder extends Seeder
 		
 		// Zakaznik tenantu 1 'C2'
 		$userC2 = User::factory()->create([
-			//'first_name' => 'Petr',
-			//'last_name' => 'Komárek',
+			'first_name' => 'Petr',
+			'last_name' => 'Komárek',
 			'tenant_id' => $tenant1,
-			'name' => 'Petr Komárek',
-			//'company' => 'Hvězdárna',
-			//'alias' => 'Petr',
 			'email' => 'komarek@centrum.cz',
-			//'phone' => '+420721474741',
+			'phone' => '+420721474741',
 			//'birth' => '1988-01-09',
 			'password' => 'ovoce',
 			'active' => 1, // Aktivni
@@ -115,14 +103,11 @@ class UserSeeder extends Seeder
 		]);
 		// Admin tenantu 2
 		$userA2 = User::factory()->create([
-			//'first_name' => 'Radek',
-			//'last_name' => 'Tuček',
+			'first_name' => 'Miroslav',
+			'last_name' => 'Hrubý',
 			'tenant_id' => $tenant2,
-			'name' => 'Miroslav Hrubý',
-			//'company' => 'Autoservis Tuček',
-			//'alias' => 'Radek',
 			'email' => 'hruby@example.com',
-			//'phone' => '+420728332113',
+			'phone' => '+420725221045',
 			//'birth' => '1989-11-07',
 			'password' => 'karotka',
 			'active' => 1, // Aktivni

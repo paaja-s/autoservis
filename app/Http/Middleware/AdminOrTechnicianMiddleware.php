@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminOrTechnicianMiddleware
@@ -16,6 +17,7 @@ class AdminOrTechnicianMiddleware
     */
 	public function handle(Request $request, Closure $next): Response
 	{
+		Log::debug(__METHOD__.' USER:'.Auth::user().' ');
 		if (Auth::check() && (Auth::user()->isAdmin() || Auth::user()->isTechnician())) {
 			return $next($request);
 		}

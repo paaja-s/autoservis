@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Models\Odo;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use App\Models\Vehicle;
 
 class MessageSeeder extends Seeder
 {
@@ -14,8 +15,9 @@ class MessageSeeder extends Seeder
 	 */
 	public function run(): void
 	{
-		Message::factory()->create([
-			'car_id' => 1,
+		$vehicle = Vehicle::where('registration', '1E05584')->first();
+		$message = Message::factory()->create([
+			'vehicle_id' => $vehicle,
 			'text' => 'Hlaseni kilometru',
 			'status' => 0,
 			'email' => 0,
@@ -23,12 +25,13 @@ class MessageSeeder extends Seeder
 		]);
 		
 		Odo::factory()->create([
-			'message_id' => 1,
+			'message_id' => $message,
 			'odo' => 20040,
 		]);
 		
-		Message::factory()->create([
-			'car_id' => 2,
+		$vehicle = Vehicle::where('registration', 'PU43322')->first();
+		$message = Message::factory()->create([
+			'vehicle_id' => $vehicle,
 			'text' => 'Hlaseni kilometru',
 			'status' => 0,
 			'email' => 0,
@@ -36,7 +39,7 @@ class MessageSeeder extends Seeder
 		]);
 		
 		Odo::factory()->create([
-			'message_id' => 2,
+			'message_id' => $message,
 			'odo' => 120040,
 		]);
 		

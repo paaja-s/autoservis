@@ -11,16 +11,16 @@ class Message extends Model
 	use HasFactory;
 	
 	protected $fillable = [
-		'car_id',
+		'registered_vehicle_id',
 		'text',
 		'email',
 		'status',
 		'active',
 	];
 	
-	public function car(): BelongsTo
+	public function registeredVehicle(): BelongsTo
 	{
-		return $this->belongsTo(Car::class);
+		return $this->belongsTo(Vehicle::class);
 	}
 	
 	public function odo()

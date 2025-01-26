@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CarController;
+use App\Http\Controllers\Api\VehicleController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AdminOrTechnicianMiddleware;
 use App\Http\Middleware\DebugMiddleware;
@@ -22,17 +23,6 @@ Route::middleware([TenantMiddleware::class, EnsureFrontendRequestsAreStateful::c
 	Route::get('/user/roles', [AuthController::class, 'roles']);
 	Route::post('/logout', [AuthController::class, 'logout']);
 	
-	// CARS
-	Route::get('cars', [CarController::class, 'index']);
-	Route::middleware(AdminOrTechnicianMiddleware::class)->group(function () {
-		Route::get('cars/{user}', [CarController::class, 'index']);
-		Route::get('cars/{user}/create', [CarController::class, 'create']);
-		Route::post('cars/{user}/store', [CarController::class, 'store']);
-		Route::get('cars/{user}/{car}/edit', [CarController::class, 'edit']);
-		Route::patch('cars/{user}/{car}', [CarController::class, 'update']);
-		Route::delete('cars/{user}/{car}', [CarController::class, 'destroy']);
-	});
-	
 	// USERS
 	Route::middleware(AdminOrTechnicianMiddleware::class)->group(function () {
 		Route::get('users', [UserController::class, 'index']);
@@ -41,6 +31,17 @@ Route::middleware([TenantMiddleware::class, EnsureFrontendRequestsAreStateful::c
 		Route::get('users/{user}', [UserController::class, 'edit']);
 		Route::patch('users/{user}', [UserController::class, 'update']);
 		Route::delete('users/{user}', [UserController::class, 'destroy']);
+	});
+	
+	// Vehicles
+	Route::get('vehicles', [VehicleController::class, 'index']);
+	Route::middleware(AdminOrTechnicianMiddleware::class)->group(function () {
+		Route::get('vehicles/{user}', [VehicleController::class, 'index']);
+		Route::get('vehicles/{user}/create', [VehicleController::class, 'create']);
+		Route::post('vehicles/{user}/store', [VehicleController::class, 'store']);
+		Route::get('vehicles/{user}/{vehicle}', [VehicleController::class, 'edit']);
+		Route::patch('vehicles/{user}/{vehicle}', [VehicleController::class, 'update']);
+		Route::delete('vehicles/{user}/{vehicle}', [VehicleController::class, 'destroy']);
 	});
 	
 	// MESSAGES

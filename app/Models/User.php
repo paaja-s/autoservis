@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Laravel\Sanctum\HasApiTokens;
 use App\Enums\RoleEnum;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+//use App\Http\Controllers\Api\VehicleController;
 
 /**
  * @OA\Schema(
@@ -20,7 +24,9 @@ use Illuminate\Support\Facades\Log;
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="tenant_id", type="integer", example=1),
  *     @OA\Property(property="last_role_id", type="integer", example=1),
- *     @OA\Property(property="name", type="string", example="John Doe"),
+ *     @OA\Property(property="first_name", type="string", example="John"),
+ *     @OA\Property(property="last_name", type="string", example="Doe"),
+ *     @OA\Property(property="phone", type="string", example="+420777521456"), 
  *     @OA\Property(property="email", type="string", example="admin@examle.com"),
  *     @OA\Property(property="email_verified_at", type="data", example="2025-01-16T13:40:05.000000Z"),
  *     @OA\Property(property="active", type="integer", example=1),
@@ -33,26 +39,17 @@ class User extends Authenticatable
 	/** @use HasFactory<\Database\Factories\UserFactory> */
 	use HasFactory, Notifiable, HasApiTokens;
 	
-	// Obsah tabulky roles
-	// TODO Enum trida
-	const ROLE_SUPERADMIN = 1;
-	const ROLE_ADMIN = 2;
-	const ROLE_TECHNICIAN = 3;
-	const ROLE_CUSTOMER = 4;
-
 		/**
 		* The attributes that are mass assignable.
 		*
 		* @var array<int, string>
 		*/
 	protected $fillable = [
-		//'first_name',
-		//'last_name',
-		//'company',
-		//'phone',
+		'first_name',
+		'last_name',
+		'phone',
 		//'birthdate',
 		'tenant_id',
-		'name',
 		'email',
 		'password',
 		'active',
@@ -72,49 +69,47 @@ class User extends Authenticatable
 	/**
 	 * Check if user is superadmin
 	 */
-	public function isSuperadmin()
+	public function isSuperadmin(): bool
 	{
 		//Log::debug(__METHOD__.' ROLE ID: '.$this->role?->id);
-		return $this->role?->id === self::ROLE_SUPERADMIN;
+		return $this->role?->id === RoleEnum::Superadmin->value;
 	}
 	
 	/**
 	* Check if user is admin
 	*/
-	public function isAdmin()
+	public function isAdmin(): bool
 	{
 		//Log::debug(__METHOD__.' ROLE ID: '.$this->role?->id);
-		return $this->role?->id === self::ROLE_ADMIN;
+		return $this->role?->id === RoleEnum::Admin->value;
 	}
 	
-	public function isTechnician()
+	public function isTechnician(): bool
 	{
-		return $this->role?->id === self::ROLE_TECHNICIAN;
+		return $this->role?->id === RoleEnum::Technician->value;
 	}
 	
 	/**
 	* Check if user is a regular customer
 	*/
-	public function isCustomer()
+	public function isCustomer(): bool
 	{
-		return $this->role?->id === self::ROLE_CUSTOMER;
+		return $this->role?->id === RoleEnum::Customer->value;
 	}
-
-	// Uzivatel ma vice aut (ale kazde auto ma jen jednoho uzivatele/vlastnika)
-	public function cars(): HasMany
-		{
-			return $this->hasMany(Car::class);
-		}
-		
 	
+	public function vehicles(): HasMany
+	{
+		return $this->hasMany(Vehicle::class);
+	}
+		
 	// Uzivatel muze mit vice roli (a kazda role muze mit vice uzivatelu
-	public function roles()
+	public function roles(): BelongsToMany
 	{
 		return $this->belongsToMany(Role::class, 'users_roles');
 	}
 	
 	// Uzivatelova aktualni role
-	public function role()
+	public function role(): BelongsTo
 	{
 		return $this->belongsTo(Role::class, 'last_role_id');
 	}

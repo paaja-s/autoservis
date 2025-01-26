@@ -30,14 +30,14 @@ return new class extends Migration
 			$table->id();
 			$table->foreignId('tenant_id')->nullable()->onDelete('cascade');
 			//$table->uuid('uuid')->unique(); // UUID (unikátní identifikátor)
-			//$table->string('first_name', 50); // Křestní jméno (max 50 znaků)
-			//$table->string('last_name', 50); // Příjmení (max 50 znaků)
-			$table->string('name');
+			$table->string('first_name'); // Křestní jméno (max 50 znaků)
+			$table->string('last_name'); // Příjmení (max 50 znaků)
+			//$table->string('name');
 			//$table->string('company', 50)->nullable(); // Společnost (volitelně, max 50 znaků)
 			//$table->string('alias', 50)->nullable(); // Alias (volitelně, max 50 znaků)
 			$table->string('email');
 			$table->timestamp('email_verified_at')->nullable();
-			//$table->string('phone', 20)->nullable(); // Telefon (volitelně)
+			$table->string('phone')->nullable(); // Telefon (volitelně)
 			//$table->date('birth')->nullable(); // Datum narození (volitelně)
 			$table->string('password');
 			$table->rememberToken();

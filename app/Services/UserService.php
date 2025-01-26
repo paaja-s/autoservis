@@ -12,7 +12,7 @@ class UserService
 	{
 		$tenant = app('TenantManager')->getTenant();
 		$userRole = Auth::user()->getRoleEnum();
-		//Log::debug(__METHOD__.($tenant?' Tenant '.$tenant->id:' No tenant').' ROLE:'.$userRole->name);
+		Log::debug(__METHOD__.($tenant?' Tenant '.$tenant->id:' No tenant').' ROLE:'.$userRole->name);
 		
 		return match ($userRole) {
 			RoleEnum::Admin => User::where('tenant_id', $tenant->id)
