@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Log\Logger;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
  * @OA\Info(
@@ -44,55 +45,64 @@ class AuthController extends Controller
 	
 	/**
 	 * @OA\Post(
-	 * 	path="/api/login",
-	 * 		operationId="loginUser",
+	 *     path="/api/login",
+	 *     operationId="loginUser",
 	 *     tags={"User"},
 	 *     summary="Login user",
 	 *     description="Returns the authorization token",
+	 *     @OA\RequestBody(
+	 *         required=true,
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="email", type="string", example="uzivatel@email.com", description="User's email address"),
+	 *             @OA\Property(property="password", type="string", format="password", example="heslo123", description="User's password")
+	 *         )
+	 *     ),
 	 *     @OA\Response(
 	 *         response=200,
 	 *         description="Successful response",
 	 *         @OA\JsonContent(
-	 *             @OA\Property(property="token", type="string", example="7|bhke6eMJJI5Tx1UpUXqOXEXuiwT18vkK3hpFrxVVbcc4d612"),
+	 *             @OA\Property(property="access_token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXV0b3NlcnZpc3R1Y2VrLnRlc3QvYXBpL2xvZ2luIiwiaWF0IjoxNzM3OTAzMjM5LCJleHAiOjE3Mzc5MDY4MzksIm5iZiI6MTczNzkwMzIzOSwianRpIjoiZ2ZreGVVb3ZQSU5yWWFHciIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.S_M5WIbi8UyiN0PkbP1q5iylO6VF7NF_yCDYtzmhxw8"),
+	 *             @OA\Property(property="token_type", type="string", example="bearer"),
+	 *             @OA\Property(property="expires_in", type="integer", example=3600)
 	 *         )
 	 *     ),
-	 *     
+	 *     @OA\Response(
+	 *         response=401,
+	 *         description="Unauthorized response - Invalid credentials",
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="message", type="string", example="Invalid credentials.")
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=400,
+	 *         description="Bad request - Missing or invalid input",
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="message", type="string", example="Validation error.")
+	 *         )
+	 *     )
 	 * )
 	 *
 	 * @param Request $request
 	 */
 	public function login(Request $request)
 	{
-		Log::debug(__METHOD__);
-		$request->validate([
-			'email' => 'required|string|email',
-			'password' => 'required|string',
+		// Validace vstupních dat
+		$credentials = $request->validate([
+			'email' => 'required|email',
+			'password' => 'required|string|min:6',
 		]);
-		Log::debug(__METHOD__.' validate');
 		
-		$user = User::where('email', $request->email)->first();
-		
-		Log::debug(__METHOD__.($user?' User '.$user->id:' No user'));
-		
-		if (!$user || !Hash::check($request->password, $user->password)) {
-			throw ValidationException::withMessages([
-				'email' => ['The provided credentials are incorrect.'],
-			]);
+		// Ověření uživatele a získání tokenu
+		if (!$token = auth('api')->attempt($credentials)) {
+			return response()->json(['error' => 'Unauthorized'], 401);
 		}
 		
-		$token = $user->createToken('api-token')->plainTextToken;
-		
-		$currentRole = Role::find($user->last_role_id);
-		
-		if(!$currentRole) {
-			throw new \Exception('Role not found for the given last_role_id.');
-		}
-		
-		session(['current_role' => $currentRole]);
-		
-		Log::debug(__METHOD__.' ROLE ID:'.session('current_role')->id);
-		
-		return response()->json(['token' => $token], 200);
+		// Odpověď s tokenem
+		return response()->json([
+			'access_token' => $token,
+			'token_type' => 'bearer',
+			'expires_in' => auth('api')->factory()->getTTL() * 60,
+		]);
 	}
 	
 	/**
@@ -189,6 +199,12 @@ class AuthController extends Controller
 	 *      description="Sets role to user and returns roledata",
 	 *      operationId="setRole",
 	 *      tags={"User"},
+	 *      @OA\RequestBody(
+	 *         required=true,
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="role", type="integer", example="2", description="Role id"),
+	 *         )
+	 *     ),
 	 *      @OA\Response(
 	 *         response=200,
 	 *         description="Successful response",
@@ -239,8 +255,46 @@ class AuthController extends Controller
 	 */
 	public function logout(Request $request)
 	{
-		$request->user()->currentAccessToken()->delete();
+		JWTAuth::invalidate(JWTAuth::getToken());
 		
-		return response()->json(['message' => 'Logged out'], 200);
+		return response()->json(['message' => 'User successfully logged out']);
+		//$request->user()->currentAccessToken()->delete();
+		//return response()->json(['message' => 'Logged out'], 200);
+	}
+	
+	/**
+	 * @OA\Get(
+	 *     path="/api/refresh",
+	 *     operationId="refresh",
+	 *     tags={"User"},
+	 *     summary="Refresh JW Token",
+	 *     description="Returns the authorization token",
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="Successful response",
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="access_token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXV0b3NlcnZpc3R1Y2VrLnRlc3QvYXBpL2xvZ2luIiwiaWF0IjoxNzM3OTAzMjM5LCJleHAiOjE3Mzc5MDY4MzksIm5iZiI6MTczNzkwMzIzOSwianRpIjoiZ2ZreGVVb3ZQSU5yWWFHciIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.S_M5WIbi8UyiN0PkbP1q5iylO6VF7NF_yCDYtzmhxw8"),
+	 *             @OA\Property(property="token_type", type="string", example="bearer"),
+	 *             @OA\Property(property="expires_in", type="integer", example=3600)
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=401,
+	 *         description="Unauthorized response",
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="message", type="string", example="Invalid credentials.")
+	 *         )
+	 *     ),
+	 * )
+	 *
+	 * @param Request $request
+	 */
+	public function refresh()
+	{
+		return response()->json([
+			'token' => JWTAuth::refresh(),
+			'token_type' => 'bearer',
+			'expires_in' => auth('api')->factory()->getTTL() * 60
+		]);
 	}
 }

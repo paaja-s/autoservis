@@ -2,21 +2,20 @@
 
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CarController;
 use App\Http\Controllers\Api\VehicleController;
-use App\Http\Middleware\AdminMiddleware;
+//use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AdminOrTechnicianMiddleware;
-use App\Http\Middleware\DebugMiddleware;
+use App\Http\Middleware\JwtMiddleware;
 use App\Http\Middleware\TenantMiddleware;
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+//use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 Route::post('/register', [AuthController::class, 'register']);
-Route::middleware([TenantMiddleware::class, 'web'])->group(function () { // Je treba CSRF token z GET /sanctum/csrf-cookie
+Route::middleware([TenantMiddleware::class])->group(function () { // Je treba CSRF token z GET /sanctum/csrf-cookie
 	Route::post('/login', [AuthController::class, 'login']);
 });
 
-//Route::middleware([DebugMiddleware::class, EnsureFrontendRequestsAreStateful::class, 'auth:sanctum'])->group(function () {
-Route::middleware([TenantMiddleware::class, EnsureFrontendRequestsAreStateful::class, 'auth:sanctum'])->group(function () {
+Route::group(['middleware' => [TenantMiddleware::class, JwtMiddleware::class]], function () {
+	Route::get('/refresh', [AuthController::class, 'refresh']);
 	Route::get('/user', [AuthController::class, 'user']);
 	Route::post('/user/role', [AuthController::class, 'setRole']);
 	Route::get('/user/role', [AuthController::class, 'role']);

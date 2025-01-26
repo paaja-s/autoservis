@@ -13,7 +13,8 @@ use App\Enums\RoleEnum;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-//use App\Http\Controllers\Api\VehicleController;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+
 
 /**
  * @OA\Schema(
@@ -34,7 +35,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *     @OA\Property(property="updated_at", type="data", example="2025-01-16T13:40:05.000000Z"),
  * )
  */
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
 	/** @use HasFactory<\Database\Factories\UserFactory> */
 	use HasFactory, Notifiable, HasApiTokens;
@@ -65,6 +66,16 @@ class User extends Authenticatable
 		'password',
 		'remember_token',
 	];
+	
+	public function getJWTIdentifier()
+	{
+		return $this->getKey();
+	}
+	
+	public function getJWTCustomClaims()
+	{
+		return [];
+	}
 	
 	/**
 	 * Check if user is superadmin
