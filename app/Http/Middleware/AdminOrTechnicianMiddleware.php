@@ -21,6 +21,6 @@ class AdminOrTechnicianMiddleware
 		if (Auth::check() && (Auth::user()->isAdmin() || Auth::user()->isTechnician())) {
 			return $next($request);
 		}
-		return redirect('/'); // Presmerovani na HOME
+		return response()->json(['error' => 'Not authorized', 401]);
 	}
 }

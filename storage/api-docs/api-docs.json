@@ -20,10 +20,10 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "email": {
-                                        "description": "User's email address",
+                                    "loginName": {
+                                        "description": "User's login string",
                                         "type": "string",
-                                        "example": "uzivatel@email.com"
+                                        "example": "pavel"
                                     },
                                     "password": {
                                         "description": "User's password",
@@ -44,15 +44,15 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "access_token": {
+                                        "accessToken": {
                                             "type": "string",
                                             "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXV0b3NlcnZpc3R1Y2VrLnRlc3QvYXBpL2xvZ2luIiwiaWF0IjoxNzM3OTAzMjM5LCJleHAiOjE3Mzc5MDY4MzksIm5iZiI6MTczNzkwMzIzOSwianRpIjoiZ2ZreGVVb3ZQSU5yWWFHciIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.S_M5WIbi8UyiN0PkbP1q5iylO6VF7NF_yCDYtzmhxw8"
                                         },
-                                        "token_type": {
+                                        "tokenType": {
                                             "type": "string",
                                             "example": "bearer"
                                         },
-                                        "expires_in": {
+                                        "expiresIn": {
                                             "type": "integer",
                                             "example": 3600
                                         }
@@ -233,15 +233,15 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "access_token": {
+                                        "accessToken": {
                                             "type": "string",
                                             "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXV0b3NlcnZpc3R1Y2VrLnRlc3QvYXBpL2xvZ2luIiwiaWF0IjoxNzM3OTAzMjM5LCJleHAiOjE3Mzc5MDY4MzksIm5iZiI6MTczNzkwMzIzOSwianRpIjoiZ2ZreGVVb3ZQSU5yWWFHciIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.S_M5WIbi8UyiN0PkbP1q5iylO6VF7NF_yCDYtzmhxw8"
                                         },
-                                        "token_type": {
+                                        "tokenType": {
                                             "type": "string",
                                             "example": "bearer"
                                         },
-                                        "expires_in": {
+                                        "expiresIn": {
                                             "type": "integer",
                                             "example": 3600
                                         }
@@ -266,6 +266,31 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/vehicles": {
+            "get": {
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Get user's vehicles",
+                "description": "Returns the authenticated user data",
+                "operationId": "index",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
                     }
                 }
             }
@@ -298,21 +323,25 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "tenant_id": {
+                    "tenantId": {
                         "type": "integer",
                         "example": 1
                     },
-                    "last_role_id": {
+                    "lastRoleId": {
                         "type": "integer",
                         "example": 1
                     },
-                    "first_name": {
+                    "firstName": {
                         "type": "string",
                         "example": "John"
                     },
-                    "last_name": {
+                    "lastName": {
                         "type": "string",
                         "example": "Doe"
+                    },
+                    "loginName": {
+                        "type": "string",
+                        "example": "john"
                     },
                     "phone": {
                         "type": "string",
@@ -322,7 +351,7 @@
                         "type": "string",
                         "example": "admin@examle.com"
                     },
-                    "email_verified_at": {
+                    "emailVerifiedAt": {
                         "type": "data",
                         "example": "2025-01-16T13:40:05.000000Z"
                     },
@@ -330,11 +359,11 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "created_at": {
+                    "createdAt": {
                         "type": "data",
                         "example": "2025-01-16T13:40:05.000000Z"
                     },
-                    "updated_at": {
+                    "updatedAt": {
                         "type": "data",
                         "example": "2025-01-16T13:40:05.000000Z"
                     }
@@ -350,7 +379,7 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "user_id": {
+                    "userId": {
                         "description": "User id",
                         "type": "integer",
                         "example": 3
@@ -358,6 +387,15 @@
                     "registration": {
                         "description": "Register plate",
                         "type": "string"
+                    },
+                    "active": {
+                        "description": "Active - 1 aktivní, 2 smazaný",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "pcv": {
+                        "description": "PCV (primární klíč vozidla v registru)",
+                        "type": "integer"
                     },
                     "datum1Registrace": {
                         "description": "Datum první registrace",
@@ -461,7 +499,7 @@
                         "description": "Korrigovaný součinitel absorpce",
                         "type": "string"
                     },
-                    "co2MestoMimoKombiGkm": {
+                    "co2MestoMimoKombiGKm": {
                         "description": "CO2 (město/mimo/kombi, g/km)",
                         "type": "string"
                     },
@@ -481,11 +519,11 @@
                         "description": "Spotřeba podle předpisu",
                         "type": "string"
                     },
-                    "spotrebaMestoMimoKombiL100km": {
+                    "spotrebaMestoMimoKombiL100Km": {
                         "description": "Spotřeba (město/mimo/kombi, l/100 km)",
                         "type": "string"
                     },
-                    "spotrebaPriRychlostiL100km": {
+                    "spotrebaPriRychlostiL100Km": {
                         "description": "Spotřeba při rychlosti, l/100 km",
                         "type": "string"
                     },
@@ -641,10 +679,6 @@
                         "description": "Status vozidla",
                         "type": "string"
                     },
-                    "pcv": {
-                        "description": "PCV (primární klíč vozidla v registru)",
-                        "type": "integer"
-                    },
                     "abs": {
                         "description": "Je vybaven ABS?",
                         "type": "string"
@@ -748,6 +782,14 @@
                     "rmZaniku": {
                         "description": "RM zániku",
                         "type": "string"
+                    },
+                    "createdAt": {
+                        "description": "Datum a čas vzniku záznamu",
+                        "type": "data"
+                    },
+                    "updatedAt": {
+                        "description": "Datum a čas úpravy záznamu",
+                        "type": "data"
                     }
                 },
                 "type": "object"
@@ -758,6 +800,10 @@
         {
             "name": "User",
             "description": "User"
+        },
+        {
+            "name": "Vehicle",
+            "description": "Vehicle"
         }
     ]
 }

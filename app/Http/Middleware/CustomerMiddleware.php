@@ -9,17 +9,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CustomerMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next): Response
-    {
-    	if (Auth::check() && Auth::user()->isCustomer()) {
-    		return $next($request);
-    	}
-    	
-    	return redirect('/login'); // Přesměrujte nepřihlášené uživatele
-    }
+	/**
+	* Handle an incoming request.
+	*
+	* @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+	*/
+	public function handle(Request $request, Closure $next): Response
+	{
+		if (Auth::check() && Auth::user()->isCustomer()) {
+			return $next($request);
+		}
+		return response()->json(['error' => 'Not authorized', 401]);
+	}
 }

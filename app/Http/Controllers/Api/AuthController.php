@@ -27,18 +27,14 @@ class AuthController extends Controller
 		$validated = $request->validate([
 			'first_name'=> ['required', 'string', 'max:255'],
 			'last_name' => ['required', 'string', 'max:255'],
+			'login_name' => ['required', 'string', 'max:255'],
 			'phone' => ['string', 'min:5','max:10'],
-			'email' => 'required|string|email|max:255|unique:users',
+			'email' => 'string|email|max:255|unique:users',
 			'password' => 'required|string|min:8|confirmed',
 		]);
+		$validated['password'] = Hash::make($validated['password']);
 		
-		$user = User::create([
-			'first_name' => $validated['first_name'],
-			'last_name' => $validated['last_name'],
-			'phone' => $validated['phone'],
-			'email' => $validated['email'],
-			'password' => Hash::make($validated['password']),
-		]);
+		$user = User::create($validated);
 		
 		return response()->json(['user' => $user], 201);
 	}
@@ -53,7 +49,7 @@ class AuthController extends Controller
 	 *     @OA\RequestBody(
 	 *         required=true,
 	 *         @OA\JsonContent(
-	 *             @OA\Property(property="email", type="string", example="uzivatel@email.com", description="User's email address"),
+	 *             @OA\Property(property="loginName", type="string", example="pavel", description="User's login string"),
 	 *             @OA\Property(property="password", type="string", format="password", example="heslo123", description="User's password")
 	 *         )
 	 *     ),
@@ -61,9 +57,9 @@ class AuthController extends Controller
 	 *         response=200,
 	 *         description="Successful response",
 	 *         @OA\JsonContent(
-	 *             @OA\Property(property="access_token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXV0b3NlcnZpc3R1Y2VrLnRlc3QvYXBpL2xvZ2luIiwiaWF0IjoxNzM3OTAzMjM5LCJleHAiOjE3Mzc5MDY4MzksIm5iZiI6MTczNzkwMzIzOSwianRpIjoiZ2ZreGVVb3ZQSU5yWWFHciIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.S_M5WIbi8UyiN0PkbP1q5iylO6VF7NF_yCDYtzmhxw8"),
-	 *             @OA\Property(property="token_type", type="string", example="bearer"),
-	 *             @OA\Property(property="expires_in", type="integer", example=3600)
+	 *             @OA\Property(property="accessToken", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXV0b3NlcnZpc3R1Y2VrLnRlc3QvYXBpL2xvZ2luIiwiaWF0IjoxNzM3OTAzMjM5LCJleHAiOjE3Mzc5MDY4MzksIm5iZiI6MTczNzkwMzIzOSwianRpIjoiZ2ZreGVVb3ZQSU5yWWFHciIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.S_M5WIbi8UyiN0PkbP1q5iylO6VF7NF_yCDYtzmhxw8"),
+	 *             @OA\Property(property="tokenType", type="string", example="bearer"),
+	 *             @OA\Property(property="expiresIn", type="integer", example=3600)
 	 *         )
 	 *     ),
 	 *     @OA\Response(
@@ -86,11 +82,18 @@ class AuthController extends Controller
 	 */
 	public function login(Request $request)
 	{
+		// TODO Zahrnout do prihlaseni i Tenanta ?????
+		// Vzhledem k unikatnosti tanant+login_name se to nabizi
+		
 		// Validace vstupních dat
 		$credentials = $request->validate([
-			'email' => 'required|email',
+			'loginName' => 'required|string',
 			'password' => 'required|string|min:6',
 		]);
+		
+		// Konverze z JSON nazvu na tabulkovy sloupec
+		$credentials['login_name'] = $credentials['loginName'];
+		unset($credentials['loginName']);
 		
 		// Ověření uživatele a získání tokenu
 		if (!$token = auth('api')->attempt($credentials)) {
@@ -99,9 +102,9 @@ class AuthController extends Controller
 		
 		// Odpověď s tokenem
 		return response()->json([
-			'access_token' => $token,
-			'token_type' => 'bearer',
-			'expires_in' => auth('api')->factory()->getTTL() * 60,
+			'accessToken' => $token,
+			'tokenType' => 'bearer',
+			'expiresIn' => auth('api')->factory()->getTTL() * 60,
 		]);
 	}
 	
@@ -273,9 +276,9 @@ class AuthController extends Controller
 	 *         response=200,
 	 *         description="Successful response",
 	 *         @OA\JsonContent(
-	 *             @OA\Property(property="access_token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXV0b3NlcnZpc3R1Y2VrLnRlc3QvYXBpL2xvZ2luIiwiaWF0IjoxNzM3OTAzMjM5LCJleHAiOjE3Mzc5MDY4MzksIm5iZiI6MTczNzkwMzIzOSwianRpIjoiZ2ZreGVVb3ZQSU5yWWFHciIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.S_M5WIbi8UyiN0PkbP1q5iylO6VF7NF_yCDYtzmhxw8"),
-	 *             @OA\Property(property="token_type", type="string", example="bearer"),
-	 *             @OA\Property(property="expires_in", type="integer", example=3600)
+	 *             @OA\Property(property="accessToken", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXV0b3NlcnZpc3R1Y2VrLnRlc3QvYXBpL2xvZ2luIiwiaWF0IjoxNzM3OTAzMjM5LCJleHAiOjE3Mzc5MDY4MzksIm5iZiI6MTczNzkwMzIzOSwianRpIjoiZ2ZreGVVb3ZQSU5yWWFHciIsInN1YiI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.S_M5WIbi8UyiN0PkbP1q5iylO6VF7NF_yCDYtzmhxw8"),
+	 *             @OA\Property(property="tokenType", type="string", example="bearer"),
+	 *             @OA\Property(property="expiresIn", type="integer", example=3600)
 	 *         )
 	 *     ),
 	 *     @OA\Response(
@@ -292,9 +295,9 @@ class AuthController extends Controller
 	public function refresh()
 	{
 		return response()->json([
-			'token' => JWTAuth::refresh(),
-			'token_type' => 'bearer',
-			'expires_in' => auth('api')->factory()->getTTL() * 60
+			'accessToken' => JWTAuth::refresh(),
+			'tokenType' => 'bearer',
+			'expiresIn' => auth('api')->factory()->getTTL() * 60
 		]);
 	}
 }

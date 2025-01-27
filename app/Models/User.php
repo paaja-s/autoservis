@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Laravel\Sanctum\HasApiTokens;
 use App\Enums\RoleEnum;
+use App\Traits\CamelCaseAttributes;
+use App\Traits\SnakeCaseAttributes;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-
 
 /**
  * @OA\Schema(
@@ -23,22 +23,24 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  *     title="User",
  *     description="User",
  *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="tenant_id", type="integer", example=1),
- *     @OA\Property(property="last_role_id", type="integer", example=1),
- *     @OA\Property(property="first_name", type="string", example="John"),
- *     @OA\Property(property="last_name", type="string", example="Doe"),
+ *     @OA\Property(property="tenantId", type="integer", example=1),
+ *     @OA\Property(property="lastRoleId", type="integer", example=1),
+ *     @OA\Property(property="firstName", type="string", example="John"),
+ *     @OA\Property(property="lastName", type="string", example="Doe"),
+ *     @OA\Property(property="loginName", type="string", example="john"),
  *     @OA\Property(property="phone", type="string", example="+420777521456"), 
  *     @OA\Property(property="email", type="string", example="admin@examle.com"),
- *     @OA\Property(property="email_verified_at", type="data", example="2025-01-16T13:40:05.000000Z"),
+ *     @OA\Property(property="emailVerifiedAt", type="data", example="2025-01-16T13:40:05.000000Z"),
  *     @OA\Property(property="active", type="integer", example=1),
- *     @OA\Property(property="created_at", type="data", example="2025-01-16T13:40:05.000000Z"),
- *     @OA\Property(property="updated_at", type="data", example="2025-01-16T13:40:05.000000Z"),
+ *     @OA\Property(property="createdAt", type="data", example="2025-01-16T13:40:05.000000Z"),
+ *     @OA\Property(property="updatedAt", type="data", example="2025-01-16T13:40:05.000000Z"),
  * )
  */
 class User extends Authenticatable implements JWTSubject
 {
 	/** @use HasFactory<\Database\Factories\UserFactory> */
 	use HasFactory, Notifiable, HasApiTokens;
+	use CamelCaseAttributes, SnakeCaseAttributes; // Prvody atributu na CamelCase a zpatky na SnakeCase
 	
 		/**
 		* The attributes that are mass assignable.
@@ -46,11 +48,11 @@ class User extends Authenticatable implements JWTSubject
 		* @var array<int, string>
 		*/
 	protected $fillable = [
+		'tenant_id',
 		'first_name',
 		'last_name',
+		'login_name',
 		'phone',
-		//'birthdate',
-		'tenant_id',
 		'email',
 		'password',
 		'active',
@@ -74,7 +76,13 @@ class User extends Authenticatable implements JWTSubject
 	
 	public function getJWTCustomClaims()
 	{
-		return [];
+		return [
+			'firstName' => $this->first_name,
+			'lastName' => $this->last_name,
+			'loginName' => $this->login_name,
+			'email' => $this->email,
+			'roles' => $this->roles()->get(),
+		];
 	}
 	
 	/**
@@ -82,7 +90,6 @@ class User extends Authenticatable implements JWTSubject
 	 */
 	public function isSuperadmin(): bool
 	{
-		//Log::debug(__METHOD__.' ROLE ID: '.$this->role?->id);
 		return $this->role?->id === RoleEnum::Superadmin->value;
 	}
 	
@@ -91,7 +98,6 @@ class User extends Authenticatable implements JWTSubject
 	*/
 	public function isAdmin(): bool
 	{
-		//Log::debug(__METHOD__.' ROLE ID: '.$this->role?->id);
 		return $this->role?->id === RoleEnum::Admin->value;
 	}
 	

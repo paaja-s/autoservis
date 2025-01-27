@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\CamelCaseAttributes;
+use App\Traits\SnakeCaseAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,8 +14,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *     title="Vehicle",
  *     description="Schema of vehicle (registration and registered vehicle)",
  *     @OA\Property(property="id", type="integer", example=1, description="Vvehicle id"),
- *     @OA\Property(property="user_id", type="integer", example=3, description="User id"),
+ *     @OA\Property(property="userId", type="integer", example=3, description="User id"),
  *     @OA\Property(property="registration", type="string", description="Register plate"),
+ *     @OA\Property(property="active", type="integer", example=1, description="Active - 1 aktivní, 2 smazaný"),
+ *     @OA\Property(property="pcv", type="integer", description="PCV (primární klíč vozidla v registru)"),
  *     @OA\Property(property="datum1Registrace", type="string", format="date", description="Datum první registrace"),
  *     @OA\Property(property="datum1RegistraceCr", type="string", format="date", description="Datum první registrace v ČR"),
  *     @OA\Property(property="ztp", type="string", description="ZTP"),
@@ -39,13 +43,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *     @OA\Property(property="emisniLimitEhKosnEhses", type="string", description="Emisní limit"),
  *     @OA\Property(property="stupenPlneniEmisniUrovne", type="string", description="Stupeň plnění emisní úrovně"),
  *     @OA\Property(property="korrigovanySoucinAbsorpce", type="string", description="Korrigovaný součinitel absorpce"),
- *     @OA\Property(property="co2MestoMimoKombiGkm", type="string", description="CO2 (město/mimo/kombi, g/km)"),
+ *     @OA\Property(property="co2MestoMimoKombiGKm", type="string", description="CO2 (město/mimo/kombi, g/km)"),
  *     @OA\Property(property="specifickeCo2", type="string", description="Specifické CO2"),
  *     @OA\Property(property="snizeniEmisiNedc", type="string", description="Snížení emisí NEDC"),
  *     @OA\Property(property="snizeniEmisiWltp", type="string", description="Snížení emisí WLTP"),
  *     @OA\Property(property="spotrebaPredpis", type="string", description="Spotřeba podle předpisu"),
- *     @OA\Property(property="spotrebaMestoMimoKombiL100km", type="string", description="Spotřeba (město/mimo/kombi, l/100 km)"),
- *     @OA\Property(property="spotrebaPriRychlostiL100km", type="string", description="Spotřeba při rychlosti, l/100 km"),
+ *     @OA\Property(property="spotrebaMestoMimoKombiL100Km", type="string", description="Spotřeba (město/mimo/kombi, l/100 km)"),
+ *     @OA\Property(property="spotrebaPriRychlostiL100Km", type="string", description="Spotřeba při rychlosti, l/100 km"),
  *     @OA\Property(property="spotrebaElMobilWhkmZ", type="string", description="Spotřeba el. mobilu Wh/km"),
  *     @OA\Property(property="dojezdZrKm", type="string", description="Dojezd ZR v km"),
  *     @OA\Property(property="vyrobceKaroserie", type="string", description="Výrobce karoserie"),
@@ -84,7 +88,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *     @OA\Property(property="druhRz", type="string", description="Druh RZ"),
  *     @OA\Property(property="zarazeniVozidla", type="string", description="Zařazení vozidla"),
  *     @OA\Property(property="status", type="string", description="Status vozidla"),
- *     @OA\Property(property="pcv", type="integer", description="PCV (primární klíč vozidla v registru)"),
  *     @OA\Property(property="abs", type="string", description="Je vybaven ABS?"),
  *     @OA\Property(property="airbag", type="string", description="Počet airbagů"),
  *     @OA\Property(property="asr", type="string", description="Je vybaven ASR?"),
@@ -110,7 +113,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *     @OA\Property(property="loznaSirka", type="string", description="Ložná šířka"),
  *     @OA\Property(property="vyskaDo", type="string", description="Výška DO"),
  *     @OA\Property(property="typKod", type="string", description="Typ kód"),
- *     @OA\Property(property="rmZaniku", type="string", description="RM zániku")
+ *     @OA\Property(property="rmZaniku", type="string", description="RM zániku"),
+ *     @OA\Property(property="createdAt", type="data", description="Datum a čas vzniku záznamu"),
+ *     @OA\Property(property="updatedAt", type="data", description="Datum a čas úpravy záznamu")
  * )
  */
 class Vehicle extends Model
@@ -118,6 +123,7 @@ class Vehicle extends Model
 	// Spojeni registrations a registered_vehicles do jednoho modelu
 	
 	use HasFactory;
+	use CamelCaseAttributes, SnakeCaseAttributes; // Prvody atributu na CamelCase a zpatky na SnakeCase
 	
 	protected $fillable = [
 		'user_id',
@@ -141,20 +147,20 @@ class Vehicle extends Model
 		'typ_motoru',
 		'max_vykon_kw_min',
 		'palivo',
-		'zdvihovy_objem_cm3',
+		'zdvihovy_objem_cm_3',
 		'plne_elektricke_vozidlo',
 		'hybridni_vozidlo',
 		'trida_hybridniho_vozidla',
 		'emisni_limit_ehkosn_ehses',
 		'stupen_plneni_emisni_urovne',
 		'korrigovany_soucin_absorpce',
-		'co2_mesto_mimo_kombi_gkm',
-		'specificke_co2',
+		'co_2_mesto_mimo_kombi_g_km',
+		'specificke_co_2',
 		'snizeni_emisi_nedc',
 		'snizeni_emisi_wltp',
 		'spotreba_predpis',
-		'spotreba_mesto_mimo_kombi_l100km',
-		'spotreba_pri_rychlosti_l100km',
+		'spotreba_mesto_mimo_kombi_l_100_km',
+		'spotreba_pri_rychlosti_l_100_km',
 		'spotreba_el_mobil_whkm_z',
 		'dojezd_zr_km',
 		'vyrobce_karoserie',

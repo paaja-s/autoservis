@@ -32,10 +32,10 @@ return new class extends Migration
 			//$table->uuid('uuid')->unique(); // UUID (unikátní identifikátor)
 			$table->string('first_name'); // Křestní jméno (max 50 znaků)
 			$table->string('last_name'); // Příjmení (max 50 znaků)
-			//$table->string('name');
+			$table->string('login_name'); // Login retezec
 			//$table->string('company', 50)->nullable(); // Společnost (volitelně, max 50 znaků)
 			//$table->string('alias', 50)->nullable(); // Alias (volitelně, max 50 znaků)
-			$table->string('email');
+			$table->string('email')->nullable();
 			$table->timestamp('email_verified_at')->nullable();
 			$table->string('phone')->nullable(); // Telefon (volitelně)
 			//$table->date('birth')->nullable(); // Datum narození (volitelně)
@@ -44,6 +44,7 @@ return new class extends Migration
 			$table->integer('active')->default(1); // Aktivní účet (výchozí: 1 = aktivní)
 			$table->foreignId('last_role_id')->nullable()->constrained('roles')->nullOnDelete(); // Posledni pouzita role, muze byt NULL
 			$table->timestamps();
+			$table->unique(['tenant_id', 'login_name']);
 			$table->unique(['tenant_id', 'email']);
 		});
 		

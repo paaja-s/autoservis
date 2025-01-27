@@ -10,7 +10,7 @@ use Exception;
 
 class JwtMiddleware
 {
-	public function handle($request, Closure $next)
+	public function handle(Request $request, Closure $next)
 	{
 		try {
 			JWTAuth::parseToken()->authenticate();

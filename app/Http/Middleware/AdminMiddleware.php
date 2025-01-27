@@ -18,6 +18,6 @@ class AdminMiddleware
 		if (Auth::check() && Auth::user()->isAdmin()) {
 			return $next($request);
 		}
-		return redirect('/'); // Presmerovani na HOME
+		return response()->json(['error' => 'Not authorized', 401]);
 	}
 }

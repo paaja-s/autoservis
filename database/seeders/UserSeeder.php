@@ -29,9 +29,10 @@ class UserSeeder extends Seeder
 		
 		// Superadmin, nema tenanta
 		$userSa = User::factory()->create([
+			'tenant_id' => null,
 			'first_name' => 'Pavel',
 			'last_name' => 'Štys',
-			'tenant_id' => null,
+			'login_name' => 'sa',
 			'email' => 'admin@example.com',
 			'phone' => '+420776282302',
 			//'birth' => '1989-11-07',
@@ -50,9 +51,10 @@ class UserSeeder extends Seeder
 		]);
 		// Admin tenantu 1 'A1'
 		$userA1 = User::factory()->create([
+			'tenant_id' => $tenant1,
 			'first_name' => 'Radek',
 			'last_name' => 'Tuček',
-			'tenant_id' => $tenant1,
+			'login_name' => 'radek',
 			'email' => 'tucek@example.com',
 			'phone' => '+420728332113',
 			//'birth' => '1989-11-07',
@@ -67,9 +69,10 @@ class UserSeeder extends Seeder
 		
 		// Zakaznik tenantu 1 'C1'
 		$userC1 = User::factory()->create([
+			'tenant_id' => $tenant1,
 			'first_name' => 'Pavel',
 			'last_name' => 'Štys',
-			'tenant_id' => $tenant1,
+			'login_name' => 'pavel',
 			'email' => 'paaja_s@atlas.cz',
 			'phone' => '+420776282302',
 			//'birth' => '1978-06-04',
@@ -82,9 +85,10 @@ class UserSeeder extends Seeder
 		
 		// Zakaznik tenantu 1 'C2'
 		$userC2 = User::factory()->create([
+			'tenant_id' => $tenant1,
 			'first_name' => 'Petr',
 			'last_name' => 'Komárek',
-			'tenant_id' => $tenant1,
+			'login_name' => 'petr',
 			'email' => 'komarek@centrum.cz',
 			'phone' => '+420721474741',
 			//'birth' => '1988-01-09',
@@ -103,9 +107,10 @@ class UserSeeder extends Seeder
 		]);
 		// Admin tenantu 2
 		$userA2 = User::factory()->create([
+			'tenant_id' => $tenant2,
 			'first_name' => 'Miroslav',
 			'last_name' => 'Hrubý',
-			'tenant_id' => $tenant2,
+			'login_name' => 'mirek',
 			'email' => 'hruby@example.com',
 			'phone' => '+420725221045',
 			//'birth' => '1989-11-07',

@@ -27,6 +27,7 @@ class UserFactory extends Factory
 			//'uuid' => Str::uuid()->toString(),
 			'first_name' => fake()->firstname(),
 			'last_name' => fake()->lastname(),
+			'login_name' => fake()->unique()->safeEmail(),
 			'phone' => fake()->phoneNumber(),
 			'email' => fake()->unique()->safeEmail(),
 			'email_verified_at' => now(),

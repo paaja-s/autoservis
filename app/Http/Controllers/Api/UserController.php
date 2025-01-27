@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use App\Services\UserService;
 use App\Enums\RoleEnum;
@@ -25,15 +27,15 @@ class UserController extends Controller
 	
 	public function create(Request $request)
 	{
-		$user = User::factory()->create([
+		$user = User::factory()->make([
 			'first_name'=> '',
 			'last_name' => '',
+			'login_name' => '',
 			'phone' => '',
 			'email' => '',
 			'password' => '',
 			'active' => 1,
 			'last_role_id' => RoleEnum::Customer->value(),
-			
 		]);
 		
 		return response()->json($user);
@@ -45,20 +47,25 @@ class UserController extends Controller
 		$tenant = $tenantManager->getTenant();
 		$validated = request()->validate(
 			[
-				'first_name'=> ['required', 'string', 'max:255'],
-				'last_name' => ['required', 'string', 'max:255'],
-				'phone' => ['string', 'min:5','max:10'],
-				'email' => ['required',
+				'firstName'=> ['required', 'string', 'max:255'],
+				'lastName' => ['required', 'string', 'max:255'],
+				'loginName' => ['required',
 					'string',
-					'lowercase',
-					'email',
 					'max:255',
-					Rule::unique('users', 'email')
-					->where('tenant_id', $tenant->id),
-				],
+					Rule::unique('users', 'login_name')
+					->where('tenant_id', $tenant->id)],
+				'phone' => ['string', 'min:5','max:15'],
+				'email' => ['string', 'lowercase', 'email', 'max:255'],
+				'password' => ['string','password', 'max:25'],
 			]);
 		$validated['tenant_id'] = $tenant->id;
-		$newUser = User::create($validated);
+		if(isset($validated['password'])) {
+			$validated['password'] = Hash::make($validated['password']);
+		}
+		
+		$newUser = User::make();
+		$newUser->fill($validated);
+		$newUser->save();
 		
 		return response()->json($newUser);
 	}
@@ -74,29 +81,26 @@ class UserController extends Controller
 		
 		$validated = request()->validate(
 			[
-				'first_name'=> ['required', 'string', 'max:255'],
-				'last_name' => ['required', 'string', 'max:255'],
-				'phone' => ['string', 'min:5','max:10'],
-				'email' => ['required',
+				'firstName' => ['required', 'string', 'max:255'],
+				'lastName' => ['required', 'string', 'max:255'],
+				'loginName' => ['required',
 					'string',
-					'lowercase',
-					'email',
 					'max:255',
-					Rule::unique('users', 'email')
+					Rule::unique('users', 'login_name')
 					->where('tenant_id', $user->tenant_id)
-					->ignore($user->id),
-				],
+					->ignore($user->id)],
+				'phone' => ['string', 'min:5', 'max:15'],
+				'email' => ['string','lowercase', 'email', 'max:255'],
+				'password' => ['string','password', 'max:25'],
 			]);
 		
-		$user->first_name = $validated['first_name'];
-		$user->last_name = $validated['last_name'];
-		$user->phone = $validated['phone'];
-		$user->email = $validated['email'];
+		if(isset($validated['password'])) {
+			$validated['password'] = Hash::make($validated['password']);
+		}
+		$user->fill($validated);
 		$user->save();
 		
 		return response()->json($user);
 	}
-	
-	
 	
 }

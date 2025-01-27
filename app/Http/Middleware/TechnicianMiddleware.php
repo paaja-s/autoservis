@@ -19,7 +19,6 @@ class TechnicianMiddleware
 		if (Auth::check() && Auth::user()->isTechnician()) {
 			return $next($request);
 		}
-		// TODO Vyjimka
-		return redirect('/'); // Presmerovani na HOME
+		return response()->json(['error' => 'Not authorized', 401]);
 	}
 }
