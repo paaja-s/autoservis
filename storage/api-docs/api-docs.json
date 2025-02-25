@@ -159,7 +159,7 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "role": {
+                                    "id": {
                                         "description": "Role id",
                                         "type": "integer",
                                         "example": "2"
@@ -225,7 +225,7 @@
                 ],
                 "summary": "Refresh JW Token",
                 "description": "Returns the authorization token",
-                "operationId": "refresh",
+                "operationId": "refreshToken",
                 "responses": {
                     "200": {
                         "description": "Successful response",
@@ -270,21 +270,516 @@
                 }
             }
         },
-        "/api/vehicles": {
+        "/api/users": {
             "get": {
                 "tags": [
-                    "Vehicle"
+                    "User"
                 ],
-                "summary": "Get user's vehicles",
+                "summary": "Get user's users",
                 "description": "Returns the authenticated user data",
-                "operationId": "index",
+                "operationId": "indexUser",
                 "responses": {
                     "200": {
                         "description": "Successful response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/User"
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/users/store": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Save a new user",
+                "description": "Saves and seturns new user's data",
+                "operationId": "storeUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user": {
+                                        "$ref": "#/components/schemas/User"
+                                    },
+                                    "roles": {
+                                        "description": "List of user's roles",
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Role"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "roles": {
+                                            "description": "List of user's roles",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Role"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/users/{user}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user",
+                "description": "Returns user data",
+                "operationId": "editUser",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "roles": {
+                                            "description": "List of user's roles",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Role"
+                                            }
+                                        },
+                                        "availableRoles": {
+                                            "description": "List of available roles",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Role"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/users/{id}": {
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update a user",
+                "description": "Updates a user's data. If the authenticated user updates their own data, the response contains a new JWT access token. If the user updates another user's data, the response contains the updated user object.",
+                "operationId": "putUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user": {
+                                        "$ref": "#/components/schemas/User"
+                                    },
+                                    "roles": {
+                                        "description": "List of user's roles",
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Role"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response: If the user updates themselves, a new access token is returned.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "accessToken": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                        },
+                                        "tokenType": {
+                                            "type": "string",
+                                            "example": "bearer"
+                                        },
+                                        "expiresIn": {
+                                            "type": "integer",
+                                            "example": 3600
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful response: If the user updates another user, the updated user object is returned.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "roles": {
+                                            "description": "List of user's roles",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Role"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/users/patch": {
+            "patch": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Save a part of a user",
+                "description": "Saves a part of user's data",
+                "operationId": "patchUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user": {
+                                        "$ref": "#/components/schemas/User"
+                                    },
+                                    "roles": {
+                                        "description": "List of user's roles",
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Role"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "roles": {
+                                            "description": "List of user's roles",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Role"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/vehicles": {
+            "get": {
+                "tags": [
+                    "Vehicles"
+                ],
+                "summary": "Get a list of all vehicles by optional user",
+                "description": "Returns a list of vehicles with applied changes. Filtered by user parameter, or by logged user",
+                "operationId": "getVehicles",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/VehicleShort"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Vehicles"
+                ],
+                "summary": "Create a new vehicle",
+                "description": "Returns new vehicle data",
+                "operationId": "storeVehicle",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Vehicle"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Vehicle"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/vehicles/{vehicle}": {
+            "get": {
+                "tags": [
+                    "Vehicles"
+                ],
+                "summary": "Data of existing vehicle by vehicle_id",
+                "operationId": "editVehicle",
+                "parameters": [
+                    {
+                        "name": "vehicle",
+                        "in": "path",
+                        "description": "Vehicle ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "vehicle": {
+                                            "$ref": "#/components/schemas/Register"
+                                        },
+                                        "vehicleShort": {
+                                            "$ref": "#/components/schemas/VehicleShort"
+                                        },
+                                        "vehicleChanges": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/VehicleChanges"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/vehicles/{vehicleShort}": {
+            "delete": {
+                "tags": [
+                    "Vehicles"
+                ],
+                "summary": "Deleting (archiving) of existing vehicle by vehicle_id",
+                "operationId": "deleteVehicle",
+                "parameters": [
+                    {
+                        "name": "vehicleShort",
+                        "in": "path",
+                        "description": "Vehicle ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Vehicle is archived"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Vehicles"
+                ],
+                "summary": "Patching of existing vehicle by vehicle_id",
+                "operationId": "patchVehicle",
+                "parameters": [
+                    {
+                        "name": "vehicleShort",
+                        "in": "path",
+                        "description": "Vehicle ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Vehicle"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "vehicle": {
+                                            "$ref": "#/components/schemas/Register"
+                                        },
+                                        "vehicleShort": {
+                                            "$ref": "#/components/schemas/VehicleShort"
+                                        },
+                                        "vehicleChanges": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/VehicleChanges"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -373,9 +868,872 @@
             "Vehicle": {
                 "title": "Vehicle",
                 "description": "Schema of vehicle (registration and registered vehicle)",
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/VehicleShort"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "description": "Vehicle id",
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "userId": {
+                                "description": "User id",
+                                "type": "integer",
+                                "example": 3
+                            },
+                            "registration": {
+                                "description": "Register plate",
+                                "type": "string"
+                            },
+                            "active": {
+                                "description": "Active - 1 aktivní, 2 smazaný",
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "pcv": {
+                                "description": "PCV (primární klíč vozidla v registru)",
+                                "type": "integer"
+                            },
+                            "datum1Registrace": {
+                                "description": "Datum první registrace",
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "datum1RegistraceCr": {
+                                "description": "Datum první registrace v ČR",
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "ztp": {
+                                "description": "ZTP",
+                                "type": "string"
+                            },
+                            "esEu": {
+                                "description": "ES EU",
+                                "type": "string"
+                            },
+                            "druhVozidla": {
+                                "description": "Druh vozidla",
+                                "type": "string"
+                            },
+                            "druhVozidla2R": {
+                                "description": "Druh vozidla 2. řádku",
+                                "type": "string"
+                            },
+                            "kategorieVozidla": {
+                                "description": "Kategorie vozidla",
+                                "type": "string"
+                            },
+                            "tovarniZnacka": {
+                                "description": "Tovární značka vozidla",
+                                "type": "string"
+                            },
+                            "typ": {
+                                "description": "Typ vozidla",
+                                "type": "string"
+                            },
+                            "varianta": {
+                                "description": "Varianta",
+                                "type": "string"
+                            },
+                            "verze": {
+                                "description": "Verze",
+                                "type": "string"
+                            },
+                            "vin": {
+                                "description": "VIN vozidla",
+                                "type": "string"
+                            },
+                            "obchodniOznaceni": {
+                                "description": "Obchodní označení",
+                                "type": "string"
+                            },
+                            "vyrobceVozidla": {
+                                "description": "Výrobce vozidla",
+                                "type": "string"
+                            },
+                            "vyrobceMotoru": {
+                                "description": "Výrobce motoru",
+                                "type": "string"
+                            },
+                            "typMotoru": {
+                                "description": "Typ motoru",
+                                "type": "string"
+                            },
+                            "maxVykonKwMin": {
+                                "description": "Maximální výkon (kW, min)",
+                                "type": "string"
+                            },
+                            "palivo": {
+                                "description": "Palivo vozidla",
+                                "type": "string"
+                            },
+                            "zdvihovyObjemCm3": {
+                                "description": "Zdvihový objem motoru v cm³",
+                                "type": "integer"
+                            },
+                            "plneElektrickeVozidlo": {
+                                "description": "Je plně elektrické vozidlo?",
+                                "type": "string"
+                            },
+                            "hybridniVozidlo": {
+                                "description": "Je hybridní vozidlo?",
+                                "type": "string"
+                            },
+                            "tridaHybridnihoVozidla": {
+                                "description": "Třída hybridního vozidla",
+                                "type": "string"
+                            },
+                            "emisniLimitEhKosnEhses": {
+                                "description": "Emisní limit",
+                                "type": "string"
+                            },
+                            "stupenPlneniEmisniUrovne": {
+                                "description": "Stupeň plnění emisní úrovně",
+                                "type": "string"
+                            },
+                            "korrigovanySoucinAbsorpce": {
+                                "description": "Korrigovaný součinitel absorpce",
+                                "type": "string"
+                            },
+                            "co2MestoMimoKombiGKm": {
+                                "description": "CO2 (město/mimo/kombi, g/km)",
+                                "type": "string"
+                            },
+                            "specifickeCo2": {
+                                "description": "Specifické CO2",
+                                "type": "string"
+                            },
+                            "snizeniEmisiNedc": {
+                                "description": "Snížení emisí NEDC",
+                                "type": "string"
+                            },
+                            "snizeniEmisiWltp": {
+                                "description": "Snížení emisí WLTP",
+                                "type": "string"
+                            },
+                            "spotrebaPredpis": {
+                                "description": "Spotřeba podle předpisu",
+                                "type": "string"
+                            },
+                            "spotrebaMestoMimoKombiL100Km": {
+                                "description": "Spotřeba (město/mimo/kombi, l/100 km)",
+                                "type": "string"
+                            },
+                            "spotrebaPriRychlostiL100Km": {
+                                "description": "Spotřeba při rychlosti, l/100 km",
+                                "type": "string"
+                            },
+                            "spotrebaElMobilWhkmZ": {
+                                "description": "Spotřeba el. mobilu Wh/km",
+                                "type": "string"
+                            },
+                            "dojezdZrKm": {
+                                "description": "Dojezd ZR v km",
+                                "type": "string"
+                            },
+                            "vyrobceKaroserie": {
+                                "description": "Výrobce karoserie",
+                                "type": "string"
+                            },
+                            "druhTyp": {
+                                "description": "Druh a typ vozidla",
+                                "type": "string"
+                            },
+                            "vyrobniCisloKaroserie": {
+                                "description": "Výrobní číslo karoserie",
+                                "type": "string"
+                            },
+                            "barva": {
+                                "description": "Barva vozidla",
+                                "type": "string"
+                            },
+                            "barvaDoplnkova": {
+                                "description": "Doplňková barva vozidla",
+                                "type": "string"
+                            },
+                            "pocetMistCelkemSezeniStani": {
+                                "description": "Počet míst celkem (sezení/stání)",
+                                "type": "string"
+                            },
+                            "celkovaDelkaSirkaVyskaMm": {
+                                "description": "Celková délka, šířka a výška v mm",
+                                "type": "string"
+                            },
+                            "rozvorMm": {
+                                "description": "Rozvor v mm",
+                                "type": "string"
+                            },
+                            "rozchodMm": {
+                                "description": "Rozchod v mm",
+                                "type": "string"
+                            },
+                            "provozniHmotnost": {
+                                "description": "Provozní hmotnost vozidla",
+                                "type": "integer"
+                            },
+                            "nejvetsiTechPovolenaHmotnostKg": {
+                                "description": "Největší technicky povolená hmotnost (kg)",
+                                "type": "string"
+                            },
+                            "nejvetsiTechHmotnostNapravaKg": {
+                                "description": "Největší technická hmotnost na nápravu (kg)",
+                                "type": "string"
+                            },
+                            "nejvetsiTechHmotnostPripojBrzdeneKg": {
+                                "description": "Největší technická hmotnost přívěsu brzděného (kg)",
+                                "type": "string"
+                            },
+                            "nejvetsiTechHmotnostPripojNebrzdeneKg": {
+                                "description": "Největší technická hmotnost přívěsu nebrzděného (kg)",
+                                "type": "string"
+                            },
+                            "nejvetsiTechHmotnostSoupravyKg": {
+                                "description": "Největší technická hmotnost soupravy (kg)",
+                                "type": "string"
+                            },
+                            "hmotnostiWltp": {
+                                "description": "Hmotnosti podle WLTP",
+                                "type": "string"
+                            },
+                            "prumernaUzitecneZatizeni": {
+                                "description": "Průměrná užitečná zátěž",
+                                "type": "string"
+                            },
+                            "spojovaciZarizeniDruh": {
+                                "description": "Spojovací zařízení - druh",
+                                "type": "string"
+                            },
+                            "pocetNapravPohanenych": {
+                                "description": "Počet náprav (poháněných)",
+                                "type": "string"
+                            },
+                            "kolaPneumatikyRozmeryMontaz": {
+                                "description": "Kola/pneumatiky - rozměry a montáž",
+                                "type": "string"
+                            },
+                            "hlukVozidlaDbaStojiciOtMin": {
+                                "description": "Hluk vozidla v dBA při stojícím motoru (ot/min)",
+                                "type": "string"
+                            },
+                            "zaJizdy": {
+                                "description": "Hluk vozidla za jízdy",
+                                "type": "string"
+                            },
+                            "nejvyssiRychlostKmh": {
+                                "description": "Nejvyšší rychlost vozidla (km/h)",
+                                "type": "integer"
+                            },
+                            "pomerVykonHmotnostKwkg": {
+                                "description": "Poměr výkon/hmotnost (kW/kg)",
+                                "type": "string"
+                            },
+                            "inovativniTechnologie": {
+                                "description": "Inovativní technologie",
+                                "type": "string"
+                            },
+                            "stupenDokonceni": {
+                                "description": "Stupeň dokončení",
+                                "type": "string"
+                            },
+                            "faktorOdchylkyDe": {
+                                "description": "Faktor odchylky DE",
+                                "type": "string"
+                            },
+                            "faktorVerifikaceVf": {
+                                "description": "Faktor verifikace VF",
+                                "type": "string"
+                            },
+                            "ucelVozidla": {
+                                "description": "Účel vozidla",
+                                "type": "string"
+                            },
+                            "dalsiZaznamy": {
+                                "description": "Další záznamy",
+                                "type": "string"
+                            },
+                            "alternativniProvedeni": {
+                                "description": "Alternativní provedení",
+                                "type": "string"
+                            },
+                            "cisloTp": {
+                                "description": "Číslo technického průkazu",
+                                "type": "string"
+                            },
+                            "cisloOrv": {
+                                "description": "Číslo ORV",
+                                "type": "string"
+                            },
+                            "druhRz": {
+                                "description": "Druh RZ",
+                                "type": "string"
+                            },
+                            "zarazeniVozidla": {
+                                "description": "Zařazení vozidla",
+                                "type": "string"
+                            },
+                            "status": {
+                                "description": "Status vozidla",
+                                "type": "string"
+                            },
+                            "abs": {
+                                "description": "Je vybaven ABS?",
+                                "type": "string"
+                            },
+                            "airbag": {
+                                "description": "Počet airbagů",
+                                "type": "string"
+                            },
+                            "asr": {
+                                "description": "Je vybaven ASR?",
+                                "type": "string"
+                            },
+                            "brzdyNouzova": {
+                                "description": "Nouzové brzdy",
+                                "type": "string"
+                            },
+                            "brzdyOdlehcovaci": {
+                                "description": "Odlehčovací brzdy",
+                                "type": "string"
+                            },
+                            "brzdyParkovaci": {
+                                "description": "Parkovací brzdy",
+                                "type": "string"
+                            },
+                            "brzdyProvozni": {
+                                "description": "Provozní brzdy",
+                                "type": "string"
+                            },
+                            "doplTextNaTp": {
+                                "description": "Doplňkový text na technickém průkazu",
+                                "type": "string"
+                            },
+                            "hmotnostiProvozniDo": {
+                                "description": "Hmotnost provozní DO",
+                                "type": "string"
+                            },
+                            "hmotnostiZatezSz": {
+                                "description": "Hmotnost zátěže SZ",
+                                "type": "string"
+                            },
+                            "hmotnostiZatezSzTyp": {
+                                "description": "Typ zátěže SZ",
+                                "type": "string"
+                            },
+                            "hydropohon": {
+                                "description": "Je vybaven hydropohonem?",
+                                "type": "string"
+                            },
+                            "objemCisterny": {
+                                "description": "Objem cisterny",
+                                "type": "string"
+                            },
+                            "zatezStrechy": {
+                                "description": "Zátěž střechy",
+                                "type": "integer"
+                            },
+                            "cisloMotoru": {
+                                "description": "Číslo motoru",
+                                "type": "string"
+                            },
+                            "nejvyssiRychlostOmezeni": {
+                                "description": "Nejvyšší rychlost s omezením",
+                                "type": "string"
+                            },
+                            "ovladaniBrzSz": {
+                                "description": "Ovládání brzd SZ",
+                                "type": "string"
+                            },
+                            "ovladaniBrzSzDruh": {
+                                "description": "Druh ovládání brzd SZ",
+                                "type": "string"
+                            },
+                            "retarder": {
+                                "description": "Je vybaven retardérem?",
+                                "type": "string"
+                            },
+                            "rokVyroby": {
+                                "description": "Rok výroby vozidla",
+                                "type": "integer"
+                            },
+                            "delkaDo": {
+                                "description": "Délka DO",
+                                "type": "string"
+                            },
+                            "loznaDelka": {
+                                "description": "Ložná délka",
+                                "type": "string"
+                            },
+                            "loznaSirka": {
+                                "description": "Ložná šířka",
+                                "type": "string"
+                            },
+                            "vyskaDo": {
+                                "description": "Výška DO",
+                                "type": "string"
+                            },
+                            "typKod": {
+                                "description": "Typ kód",
+                                "type": "string"
+                            },
+                            "rmZaniku": {
+                                "description": "RM zániku",
+                                "type": "string"
+                            },
+                            "createdAt": {
+                                "description": "Datum a čas vzniku záznamu",
+                                "type": "data"
+                            },
+                            "updatedAt": {
+                                "description": "Datum a čas úpravy záznamu",
+                                "type": "data"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "Register": {
+                "title": "Register",
+                "description": "Registered vehicle",
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/VehicleShort"
+                    },
+                    {
+                        "properties": {
+                            "datum1Registrace": {
+                                "description": "Datum první registrace",
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "datum1RegistraceCr": {
+                                "description": "Datum první registrace v ČR",
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "ztp": {
+                                "description": "ZTP",
+                                "type": "string"
+                            },
+                            "esEu": {
+                                "description": "ES EU",
+                                "type": "string"
+                            },
+                            "druhVozidla": {
+                                "description": "Druh vozidla",
+                                "type": "string"
+                            },
+                            "druhVozidla2R": {
+                                "description": "Druh vozidla 2. řádku",
+                                "type": "string"
+                            },
+                            "kategorieVozidla": {
+                                "description": "Kategorie vozidla",
+                                "type": "string"
+                            },
+                            "tovarniZnacka": {
+                                "description": "Tovární značka vozidla",
+                                "type": "string"
+                            },
+                            "typ": {
+                                "description": "Typ vozidla",
+                                "type": "string"
+                            },
+                            "varianta": {
+                                "description": "Varianta",
+                                "type": "string"
+                            },
+                            "verze": {
+                                "description": "Verze",
+                                "type": "string"
+                            },
+                            "vin": {
+                                "description": "VIN vozidla",
+                                "type": "string"
+                            },
+                            "obchodniOznaceni": {
+                                "description": "Obchodní označení",
+                                "type": "string"
+                            },
+                            "vyrobceVozidla": {
+                                "description": "Výrobce vozidla",
+                                "type": "string"
+                            },
+                            "vyrobceMotoru": {
+                                "description": "Výrobce motoru",
+                                "type": "string"
+                            },
+                            "typMotoru": {
+                                "description": "Typ motoru",
+                                "type": "string"
+                            },
+                            "maxVykonKwMin": {
+                                "description": "Maximální výkon (kW, min)",
+                                "type": "string"
+                            },
+                            "palivo": {
+                                "description": "Palivo vozidla",
+                                "type": "string"
+                            },
+                            "zdvihovyObjemCm3": {
+                                "description": "Zdvihový objem motoru v cm³",
+                                "type": "integer"
+                            },
+                            "plneElektrickeVozidlo": {
+                                "description": "Je plně elektrické vozidlo?",
+                                "type": "string"
+                            },
+                            "hybridniVozidlo": {
+                                "description": "Je hybridní vozidlo?",
+                                "type": "string"
+                            },
+                            "tridaHybridnihoVozidla": {
+                                "description": "Třída hybridního vozidla",
+                                "type": "string"
+                            },
+                            "emisniLimitEhKosnEhses": {
+                                "description": "Emisní limit",
+                                "type": "string"
+                            },
+                            "stupenPlneniEmisniUrovne": {
+                                "description": "Stupeň plnění emisní úrovně",
+                                "type": "string"
+                            },
+                            "korrigovanySoucinAbsorpce": {
+                                "description": "Korrigovaný součinitel absorpce",
+                                "type": "string"
+                            },
+                            "co2MestoMimoKombiGKm": {
+                                "description": "CO2 (město/mimo/kombi, g/km)",
+                                "type": "string"
+                            },
+                            "specifickeCo2": {
+                                "description": "Specifické CO2",
+                                "type": "string"
+                            },
+                            "snizeniEmisiNedc": {
+                                "description": "Snížení emisí NEDC",
+                                "type": "string"
+                            },
+                            "snizeniEmisiWltp": {
+                                "description": "Snížení emisí WLTP",
+                                "type": "string"
+                            },
+                            "spotrebaPredpis": {
+                                "description": "Spotřeba podle předpisu",
+                                "type": "string"
+                            },
+                            "spotrebaMestoMimoKombiL100Km": {
+                                "description": "Spotřeba (město/mimo/kombi, l/100 km)",
+                                "type": "string"
+                            },
+                            "spotrebaPriRychlostiL100Km": {
+                                "description": "Spotřeba při rychlosti, l/100 km",
+                                "type": "string"
+                            },
+                            "spotrebaElMobilWhkmZ": {
+                                "description": "Spotřeba el. mobilu Wh/km",
+                                "type": "string"
+                            },
+                            "dojezdZrKm": {
+                                "description": "Dojezd ZR v km",
+                                "type": "string"
+                            },
+                            "vyrobceKaroserie": {
+                                "description": "Výrobce karoserie",
+                                "type": "string"
+                            },
+                            "druhTyp": {
+                                "description": "Druh a typ vozidla",
+                                "type": "string"
+                            },
+                            "vyrobniCisloKaroserie": {
+                                "description": "Výrobní číslo karoserie",
+                                "type": "string"
+                            },
+                            "barva": {
+                                "description": "Barva vozidla",
+                                "type": "string"
+                            },
+                            "barvaDoplnkova": {
+                                "description": "Doplňková barva vozidla",
+                                "type": "string"
+                            },
+                            "pocetMistCelkemSezeniStani": {
+                                "description": "Počet míst celkem (sezení/stání)",
+                                "type": "string"
+                            },
+                            "celkovaDelkaSirkaVyskaMm": {
+                                "description": "Celková délka, šířka a výška v mm",
+                                "type": "string"
+                            },
+                            "rozvorMm": {
+                                "description": "Rozvor v mm",
+                                "type": "string"
+                            },
+                            "rozchodMm": {
+                                "description": "Rozchod v mm",
+                                "type": "string"
+                            },
+                            "provozniHmotnost": {
+                                "description": "Provozní hmotnost vozidla",
+                                "type": "integer"
+                            },
+                            "nejvetsiTechPovolenaHmotnostKg": {
+                                "description": "Největší technicky povolená hmotnost (kg)",
+                                "type": "string"
+                            },
+                            "nejvetsiTechHmotnostNapravaKg": {
+                                "description": "Největší technická hmotnost na nápravu (kg)",
+                                "type": "string"
+                            },
+                            "nejvetsiTechHmotnostPripojBrzdeneKg": {
+                                "description": "Největší technická hmotnost přívěsu brzděného (kg)",
+                                "type": "string"
+                            },
+                            "nejvetsiTechHmotnostPripojNebrzdeneKg": {
+                                "description": "Největší technická hmotnost přívěsu nebrzděného (kg)",
+                                "type": "string"
+                            },
+                            "nejvetsiTechHmotnostSoupravyKg": {
+                                "description": "Největší technická hmotnost soupravy (kg)",
+                                "type": "string"
+                            },
+                            "hmotnostiWltp": {
+                                "description": "Hmotnosti podle WLTP",
+                                "type": "string"
+                            },
+                            "prumernaUzitecneZatizeni": {
+                                "description": "Průměrná užitečná zátěž",
+                                "type": "string"
+                            },
+                            "spojovaciZarizeniDruh": {
+                                "description": "Spojovací zařízení - druh",
+                                "type": "string"
+                            },
+                            "pocetNapravPohanenych": {
+                                "description": "Počet náprav (poháněných)",
+                                "type": "string"
+                            },
+                            "kolaPneumatikyRozmeryMontaz": {
+                                "description": "Kola/pneumatiky - rozměry a montáž",
+                                "type": "string"
+                            },
+                            "hlukVozidlaDbaStojiciOtMin": {
+                                "description": "Hluk vozidla v dBA při stojícím motoru (ot/min)",
+                                "type": "string"
+                            },
+                            "zaJizdy": {
+                                "description": "Hluk vozidla za jízdy",
+                                "type": "string"
+                            },
+                            "nejvyssiRychlostKmh": {
+                                "description": "Nejvyšší rychlost vozidla (km/h)",
+                                "type": "integer"
+                            },
+                            "pomerVykonHmotnostKwkg": {
+                                "description": "Poměr výkon/hmotnost (kW/kg)",
+                                "type": "string"
+                            },
+                            "inovativniTechnologie": {
+                                "description": "Inovativní technologie",
+                                "type": "string"
+                            },
+                            "stupenDokonceni": {
+                                "description": "Stupeň dokončení",
+                                "type": "string"
+                            },
+                            "faktorOdchylkyDe": {
+                                "description": "Faktor odchylky DE",
+                                "type": "string"
+                            },
+                            "faktorVerifikaceVf": {
+                                "description": "Faktor verifikace VF",
+                                "type": "string"
+                            },
+                            "ucelVozidla": {
+                                "description": "Účel vozidla",
+                                "type": "string"
+                            },
+                            "dalsiZaznamy": {
+                                "description": "Další záznamy",
+                                "type": "string"
+                            },
+                            "alternativniProvedeni": {
+                                "description": "Alternativní provedení",
+                                "type": "string"
+                            },
+                            "cisloTp": {
+                                "description": "Číslo technického průkazu",
+                                "type": "string"
+                            },
+                            "cisloOrv": {
+                                "description": "Číslo ORV",
+                                "type": "string"
+                            },
+                            "druhRz": {
+                                "description": "Druh RZ",
+                                "type": "string"
+                            },
+                            "zarazeniVozidla": {
+                                "description": "Zařazení vozidla",
+                                "type": "string"
+                            },
+                            "status": {
+                                "description": "Status vozidla",
+                                "type": "string"
+                            },
+                            "pcv": {
+                                "description": "PCV (primární klíč vozidla)",
+                                "type": "integer"
+                            },
+                            "abs": {
+                                "description": "Je vybaven ABS?",
+                                "type": "string"
+                            },
+                            "airbag": {
+                                "description": "Počet airbagů",
+                                "type": "string"
+                            },
+                            "asr": {
+                                "description": "Je vybaven ASR?",
+                                "type": "string"
+                            },
+                            "brzdyNouzova": {
+                                "description": "Nouzové brzdy",
+                                "type": "string"
+                            },
+                            "brzdyOdlehcovaci": {
+                                "description": "Odlehčovací brzdy",
+                                "type": "string"
+                            },
+                            "brzdyParkovaci": {
+                                "description": "Parkovací brzdy",
+                                "type": "string"
+                            },
+                            "brzdyProvozni": {
+                                "description": "Provozní brzdy",
+                                "type": "string"
+                            },
+                            "doplTextNaTp": {
+                                "description": "Doplňkový text na technickém průkazu",
+                                "type": "string"
+                            },
+                            "hmotnostiProvozniDo": {
+                                "description": "Hmotnost provozní DO",
+                                "type": "string"
+                            },
+                            "hmotnostiZatezSz": {
+                                "description": "Hmotnost zátěže SZ",
+                                "type": "string"
+                            },
+                            "hmotnostiZatezSzTyp": {
+                                "description": "Typ zátěže SZ",
+                                "type": "string"
+                            },
+                            "hydropohon": {
+                                "description": "Je vybaven hydropohonem?",
+                                "type": "string"
+                            },
+                            "objemCisterny": {
+                                "description": "Objem cisterny",
+                                "type": "string"
+                            },
+                            "zatezStrechy": {
+                                "description": "Zátěž střechy",
+                                "type": "integer"
+                            },
+                            "cisloMotoru": {
+                                "description": "Číslo motoru",
+                                "type": "string"
+                            },
+                            "nejvyssiRychlostOmezeni": {
+                                "description": "Nejvyšší rychlost s omezením",
+                                "type": "string"
+                            },
+                            "ovladaniBrzSz": {
+                                "description": "Ovládání brzd SZ",
+                                "type": "string"
+                            },
+                            "ovladaniBrzSzDruh": {
+                                "description": "Druh ovládání brzd SZ",
+                                "type": "string"
+                            },
+                            "retarder": {
+                                "description": "Je vybaven retardérem?",
+                                "type": "string"
+                            },
+                            "rokVyroby": {
+                                "description": "Rok výroby vozidla",
+                                "type": "integer"
+                            },
+                            "delkaDo": {
+                                "description": "Délka DO",
+                                "type": "string"
+                            },
+                            "loznaDelka": {
+                                "description": "Ložná délka",
+                                "type": "string"
+                            },
+                            "loznaSirka": {
+                                "description": "Ložná šířka",
+                                "type": "string"
+                            },
+                            "vyskaDo": {
+                                "description": "Výška DO",
+                                "type": "string"
+                            },
+                            "typKod": {
+                                "description": "Typ kód",
+                                "type": "string"
+                            },
+                            "rmZaniku": {
+                                "description": "RM zániku",
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "VehicleChanges": {
+                "title": "VehicleChanges",
+                "description": "Schema of vehicle changes",
                 "properties": {
                     "id": {
-                        "description": "Vvehicle id",
+                        "description": "Vehicle change id",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "vehicle_id": {
+                        "description": "Vehicle id",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Neme of changed property",
+                        "type": "string",
+                        "example": 3
+                    },
+                    "value": {
+                        "description": "Value of changed property",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "VehicleShort": {
+                "title": "VehicleShort",
+                "description": "Schema of vehicle in shortened version",
+                "properties": {
+                    "id": {
+                        "description": "Vehicle id",
                         "type": "integer",
                         "example": 1
                     },
@@ -397,266 +1755,12 @@
                         "description": "PCV (primární klíč vozidla v registru)",
                         "type": "integer"
                     },
-                    "datum1Registrace": {
-                        "description": "Datum první registrace",
-                        "type": "string",
-                        "format": "date"
-                    },
-                    "datum1RegistraceCr": {
-                        "description": "Datum první registrace v ČR",
-                        "type": "string",
-                        "format": "date"
-                    },
-                    "ztp": {
-                        "description": "ZTP",
-                        "type": "string"
-                    },
-                    "esEu": {
-                        "description": "ES EU",
-                        "type": "string"
-                    },
-                    "druhVozidla": {
-                        "description": "Druh vozidla",
-                        "type": "string"
-                    },
-                    "druhVozidla2R": {
-                        "description": "Druh vozidla 2. řádku",
-                        "type": "string"
-                    },
-                    "kategorieVozidla": {
-                        "description": "Kategorie vozidla",
-                        "type": "string"
-                    },
-                    "tovarniZnacka": {
-                        "description": "Tovární značka vozidla",
-                        "type": "string"
-                    },
                     "typ": {
                         "description": "Typ vozidla",
                         "type": "string"
                     },
-                    "varianta": {
-                        "description": "Varianta",
-                        "type": "string"
-                    },
-                    "verze": {
-                        "description": "Verze",
-                        "type": "string"
-                    },
                     "vin": {
                         "description": "VIN vozidla",
-                        "type": "string"
-                    },
-                    "obchodniOznaceni": {
-                        "description": "Obchodní označení",
-                        "type": "string"
-                    },
-                    "vyrobceVozidla": {
-                        "description": "Výrobce vozidla",
-                        "type": "string"
-                    },
-                    "vyrobceMotoru": {
-                        "description": "Výrobce motoru",
-                        "type": "string"
-                    },
-                    "typMotoru": {
-                        "description": "Typ motoru",
-                        "type": "string"
-                    },
-                    "maxVykonKwMin": {
-                        "description": "Maximální výkon (kW, min)",
-                        "type": "string"
-                    },
-                    "palivo": {
-                        "description": "Palivo vozidla",
-                        "type": "string"
-                    },
-                    "zdvihovyObjemCm3": {
-                        "description": "Zdvihový objem motoru v cm³",
-                        "type": "integer"
-                    },
-                    "plneElektrickeVozidlo": {
-                        "description": "Je plně elektrické vozidlo?",
-                        "type": "string"
-                    },
-                    "hybridniVozidlo": {
-                        "description": "Je hybridní vozidlo?",
-                        "type": "string"
-                    },
-                    "tridaHybridnihoVozidla": {
-                        "description": "Třída hybridního vozidla",
-                        "type": "string"
-                    },
-                    "emisniLimitEhKosnEhses": {
-                        "description": "Emisní limit",
-                        "type": "string"
-                    },
-                    "stupenPlneniEmisniUrovne": {
-                        "description": "Stupeň plnění emisní úrovně",
-                        "type": "string"
-                    },
-                    "korrigovanySoucinAbsorpce": {
-                        "description": "Korrigovaný součinitel absorpce",
-                        "type": "string"
-                    },
-                    "co2MestoMimoKombiGKm": {
-                        "description": "CO2 (město/mimo/kombi, g/km)",
-                        "type": "string"
-                    },
-                    "specifickeCo2": {
-                        "description": "Specifické CO2",
-                        "type": "string"
-                    },
-                    "snizeniEmisiNedc": {
-                        "description": "Snížení emisí NEDC",
-                        "type": "string"
-                    },
-                    "snizeniEmisiWltp": {
-                        "description": "Snížení emisí WLTP",
-                        "type": "string"
-                    },
-                    "spotrebaPredpis": {
-                        "description": "Spotřeba podle předpisu",
-                        "type": "string"
-                    },
-                    "spotrebaMestoMimoKombiL100Km": {
-                        "description": "Spotřeba (město/mimo/kombi, l/100 km)",
-                        "type": "string"
-                    },
-                    "spotrebaPriRychlostiL100Km": {
-                        "description": "Spotřeba při rychlosti, l/100 km",
-                        "type": "string"
-                    },
-                    "spotrebaElMobilWhkmZ": {
-                        "description": "Spotřeba el. mobilu Wh/km",
-                        "type": "string"
-                    },
-                    "dojezdZrKm": {
-                        "description": "Dojezd ZR v km",
-                        "type": "string"
-                    },
-                    "vyrobceKaroserie": {
-                        "description": "Výrobce karoserie",
-                        "type": "string"
-                    },
-                    "druhTyp": {
-                        "description": "Druh a typ vozidla",
-                        "type": "string"
-                    },
-                    "vyrobniCisloKaroserie": {
-                        "description": "Výrobní číslo karoserie",
-                        "type": "string"
-                    },
-                    "barva": {
-                        "description": "Barva vozidla",
-                        "type": "string"
-                    },
-                    "barvaDoplnkova": {
-                        "description": "Doplňková barva vozidla",
-                        "type": "string"
-                    },
-                    "pocetMistCelkemSezeniStani": {
-                        "description": "Počet míst celkem (sezení/stání)",
-                        "type": "string"
-                    },
-                    "celkovaDelkaSirkaVyskaMm": {
-                        "description": "Celková délka, šířka a výška v mm",
-                        "type": "string"
-                    },
-                    "rozvorMm": {
-                        "description": "Rozvor v mm",
-                        "type": "string"
-                    },
-                    "rozchodMm": {
-                        "description": "Rozchod v mm",
-                        "type": "string"
-                    },
-                    "provozniHmotnost": {
-                        "description": "Provozní hmotnost vozidla",
-                        "type": "integer"
-                    },
-                    "nejvetsiTechPovolenaHmotnostKg": {
-                        "description": "Největší technicky povolená hmotnost (kg)",
-                        "type": "string"
-                    },
-                    "nejvetsiTechHmotnostNapravaKg": {
-                        "description": "Největší technická hmotnost na nápravu (kg)",
-                        "type": "string"
-                    },
-                    "nejvetsiTechHmotnostPripojBrzdeneKg": {
-                        "description": "Největší technická hmotnost přívěsu brzděného (kg)",
-                        "type": "string"
-                    },
-                    "nejvetsiTechHmotnostPripojNebrzdeneKg": {
-                        "description": "Největší technická hmotnost přívěsu nebrzděného (kg)",
-                        "type": "string"
-                    },
-                    "nejvetsiTechHmotnostSoupravyKg": {
-                        "description": "Největší technická hmotnost soupravy (kg)",
-                        "type": "string"
-                    },
-                    "hmotnostiWltp": {
-                        "description": "Hmotnosti podle WLTP",
-                        "type": "string"
-                    },
-                    "prumernaUzitecneZatizeni": {
-                        "description": "Průměrná užitečná zátěž",
-                        "type": "string"
-                    },
-                    "spojovaciZarizeniDruh": {
-                        "description": "Spojovací zařízení - druh",
-                        "type": "string"
-                    },
-                    "pocetNapravPohanenych": {
-                        "description": "Počet náprav (poháněných)",
-                        "type": "string"
-                    },
-                    "kolaPneumatikyRozmeryMontaz": {
-                        "description": "Kola/pneumatiky - rozměry a montáž",
-                        "type": "string"
-                    },
-                    "hlukVozidlaDbaStojiciOtMin": {
-                        "description": "Hluk vozidla v dBA při stojícím motoru (ot/min)",
-                        "type": "string"
-                    },
-                    "zaJizdy": {
-                        "description": "Hluk vozidla za jízdy",
-                        "type": "string"
-                    },
-                    "nejvyssiRychlostKmh": {
-                        "description": "Nejvyšší rychlost vozidla (km/h)",
-                        "type": "integer"
-                    },
-                    "pomerVykonHmotnostKwkg": {
-                        "description": "Poměr výkon/hmotnost (kW/kg)",
-                        "type": "string"
-                    },
-                    "inovativniTechnologie": {
-                        "description": "Inovativní technologie",
-                        "type": "string"
-                    },
-                    "stupenDokonceni": {
-                        "description": "Stupeň dokončení",
-                        "type": "string"
-                    },
-                    "faktorOdchylkyDe": {
-                        "description": "Faktor odchylky DE",
-                        "type": "string"
-                    },
-                    "faktorVerifikaceVf": {
-                        "description": "Faktor verifikace VF",
-                        "type": "string"
-                    },
-                    "ucelVozidla": {
-                        "description": "Účel vozidla",
-                        "type": "string"
-                    },
-                    "dalsiZaznamy": {
-                        "description": "Další záznamy",
-                        "type": "string"
-                    },
-                    "alternativniProvedeni": {
-                        "description": "Alternativní provedení",
                         "type": "string"
                     },
                     "cisloTp": {
@@ -666,130 +1770,6 @@
                     "cisloOrv": {
                         "description": "Číslo ORV",
                         "type": "string"
-                    },
-                    "druhRz": {
-                        "description": "Druh RZ",
-                        "type": "string"
-                    },
-                    "zarazeniVozidla": {
-                        "description": "Zařazení vozidla",
-                        "type": "string"
-                    },
-                    "status": {
-                        "description": "Status vozidla",
-                        "type": "string"
-                    },
-                    "abs": {
-                        "description": "Je vybaven ABS?",
-                        "type": "string"
-                    },
-                    "airbag": {
-                        "description": "Počet airbagů",
-                        "type": "string"
-                    },
-                    "asr": {
-                        "description": "Je vybaven ASR?",
-                        "type": "string"
-                    },
-                    "brzdyNouzova": {
-                        "description": "Nouzové brzdy",
-                        "type": "string"
-                    },
-                    "brzdyOdlehcovaci": {
-                        "description": "Odlehčovací brzdy",
-                        "type": "string"
-                    },
-                    "brzdyParkovaci": {
-                        "description": "Parkovací brzdy",
-                        "type": "string"
-                    },
-                    "brzdyProvozni": {
-                        "description": "Provozní brzdy",
-                        "type": "string"
-                    },
-                    "doplTextNaTp": {
-                        "description": "Doplňkový text na technickém průkazu",
-                        "type": "string"
-                    },
-                    "hmotnostiProvozniDo": {
-                        "description": "Hmotnost provozní DO",
-                        "type": "string"
-                    },
-                    "hmotnostiZatezSz": {
-                        "description": "Hmotnost zátěže SZ",
-                        "type": "string"
-                    },
-                    "hmotnostiZatezSzTyp": {
-                        "description": "Typ zátěže SZ",
-                        "type": "string"
-                    },
-                    "hydropohon": {
-                        "description": "Je vybaven hydropohonem?",
-                        "type": "string"
-                    },
-                    "objemCisterny": {
-                        "description": "Objem cisterny",
-                        "type": "string"
-                    },
-                    "zatezStrechy": {
-                        "description": "Zátěž střechy",
-                        "type": "integer"
-                    },
-                    "cisloMotoru": {
-                        "description": "Číslo motoru",
-                        "type": "string"
-                    },
-                    "nejvyssiRychlostOmezeni": {
-                        "description": "Nejvyšší rychlost s omezením",
-                        "type": "string"
-                    },
-                    "ovladaniBrzSz": {
-                        "description": "Ovládání brzd SZ",
-                        "type": "string"
-                    },
-                    "ovladaniBrzSzDruh": {
-                        "description": "Druh ovládání brzd SZ",
-                        "type": "string"
-                    },
-                    "retarder": {
-                        "description": "Je vybaven retardérem?",
-                        "type": "string"
-                    },
-                    "rokVyroby": {
-                        "description": "Rok výroby vozidla",
-                        "type": "integer"
-                    },
-                    "delkaDo": {
-                        "description": "Délka DO",
-                        "type": "string"
-                    },
-                    "loznaDelka": {
-                        "description": "Ložná délka",
-                        "type": "string"
-                    },
-                    "loznaSirka": {
-                        "description": "Ložná šířka",
-                        "type": "string"
-                    },
-                    "vyskaDo": {
-                        "description": "Výška DO",
-                        "type": "string"
-                    },
-                    "typKod": {
-                        "description": "Typ kód",
-                        "type": "string"
-                    },
-                    "rmZaniku": {
-                        "description": "RM zániku",
-                        "type": "string"
-                    },
-                    "createdAt": {
-                        "description": "Datum a čas vzniku záznamu",
-                        "type": "data"
-                    },
-                    "updatedAt": {
-                        "description": "Datum a čas úpravy záznamu",
-                        "type": "data"
                     }
                 },
                 "type": "object"
@@ -802,8 +1782,8 @@
             "description": "User"
         },
         {
-            "name": "Vehicle",
-            "description": "Vehicle"
+            "name": "Vehicles",
+            "description": "Vehicles"
         }
     ]
 }

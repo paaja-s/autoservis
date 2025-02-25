@@ -29,7 +29,7 @@ class MessageSeeder extends Seeder
 			'odo' => 20040,
 		]);
 		
-		$vehicle = Vehicle::where('registration', 'PU43322')->first();
+		$vehicle = Vehicle::where('registration', 'PU4322')->first();
 		$message = Message::factory()->create([
 			'vehicle_id' => $vehicle,
 			'text' => 'Hlaseni kilometru',

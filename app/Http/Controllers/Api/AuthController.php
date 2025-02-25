@@ -205,7 +205,7 @@ class AuthController extends Controller
 	 *      @OA\RequestBody(
 	 *         required=true,
 	 *         @OA\JsonContent(
-	 *             @OA\Property(property="role", type="integer", example="2", description="Role id"),
+	 *             @OA\Property(property="id", type="integer", example="2", description="Role id"),
 	 *         )
 	 *     ),
 	 *      @OA\Response(
@@ -230,9 +230,9 @@ class AuthController extends Controller
 		$user = $request->user();
 		//$user = Auth::user();
 		$validated = $request->validate([
-			'role' => 'required|exists:roles,id',
+			'id' => 'required|exists:roles,id',
 		]);
-		$role = Role::findOrFail($validated['role']);
+		$role = Role::findOrFail($validated['id']);
 		
 		Log::debug(__METHOD__.' ROLE ID: '.$role->id.' '.$user->roles);
 		
@@ -248,7 +248,8 @@ class AuthController extends Controller
 		$user->last_role_id = $role->id;
 		$user->save();
 		
-		return response()->json($role);
+		return $this->refresh();
+		///return response()->json($role);
 	}
 	
 	/**
@@ -268,7 +269,7 @@ class AuthController extends Controller
 	/**
 	 * @OA\Get(
 	 *     path="/api/refresh",
-	 *     operationId="refresh",
+	 *     operationId="refreshToken",
 	 *     tags={"User"},
 	 *     summary="Refresh JW Token",
 	 *     description="Returns the authorization token",

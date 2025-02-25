@@ -32,4 +32,27 @@ class UserService
 			default => collect(),
 		};
 	}
+	
+	/**
+	 * Role dostupne pro roli
+	 * superadmin - admin
+	 * admin - technician,customer
+	 * technician - customer
+	 * customer - n/a
+	 */
+	public function roles4role(): array
+	{
+		$userRole = Auth::user()->getRoleEnum();
+		$availableRoles = match ($userRole) {
+			RoleEnum::Superadmin => [RoleEnum::Admin],
+			RoleEnum::Admin => [RoleEnum::Technician, RoleEnum::Customer],
+			RoleEnum::Admin => collection(RoleEnum::Technician, RoleEnum::Customer),
+			RoleEnum::Technician => [RoleEnum::Customer],
+			default => [],
+		};
+		return array_map(fn($role) => [
+			'id' => $role->value,
+			'name' => $role->label()
+		], $availableRoles);
+	}
 }
