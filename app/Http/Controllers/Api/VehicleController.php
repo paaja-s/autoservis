@@ -10,10 +10,7 @@ use App\Models\VehicleShort;
 use App\Services\RegistrDatasource;
 use App\Services\VehicleService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 
 class VehicleController extends Controller
 {
@@ -646,4 +643,32 @@ class VehicleController extends Controller
 		
 		return response()->json(['message' => 'Vehicle is archived']);
 	}
+	
+	
+	public function search(Request $request)
+	{
+		//$tenantManager = app('TenantManager');
+		//$tenant = $tenantManager->getTenant();
+		$query = $request->query('query');
+		
+		if (!$query) {
+			return response()->json(['error' => 'Query parameter is required'], 400);
+		}
+		
+		// Hledání v registru (externí API)
+		$registrDatasource = new RegistrDatasource();
+		$registrResult = $registrDatasource->getVehicleDataByVin($query);
+		
+		// Hledání v autoservisu (podle VIN i registrační značky)
+		// TODO pridat omezeni dle Tenant/user
+		$servisResult = VehicleShort::where('vin', 'like', $query . '%')
+		->orWhere('licence_plate', 'like', $query . '%')
+		->get();
+		
+		return response()->json([
+			'registr' =>$registrResult ? $registrResult : [],
+			'servis' => $servisResult
+		]);
+	}
+	
 }

@@ -38,4 +38,19 @@ class RegistrDatasource
 		}
 		return null;
 	}
+	
+	public function getVehicleDataByVin(string $vin) {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, "{$this->baseUrl}/api/search");
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, ['vin'=>$vin]);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		curl_close($ch);
+		if($response) {
+			return json_decode($response,true);
+		}
+		return null;
+	}
 }

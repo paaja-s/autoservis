@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\RecordController;
+use App\Http\Controllers\Api\RecordTypeController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\VehicleController;
@@ -31,6 +33,9 @@ Route::group(['middleware' => [HandleCors::class, TenantMiddleware::class, JwtMi
 		Route::delete('users/{user}', [UserController::class, 'destroy']); // Smazani (archivace) uzivatele
 	});
 	
+	// Vehicles search
+	Route::get('vehicles/search', [VehicleController::class, 'search']);
+	
 	Route::get('vehicles', [VehicleController::class, 'index']); // Ziskani seznamu vsech vozidel dostupnych prihlasenemu uzivateli
 	Route::get('vehicles/user/{user}', [VehicleController::class, 'index']); // Ziskani seznamu vsech vozidel dostupnych zadanemu uzivateli
 	Route::post('vehicles', [VehicleController::class, 'store']); // Vytvoreni noveho vozidla
@@ -40,12 +45,19 @@ Route::group(['middleware' => [HandleCors::class, TenantMiddleware::class, JwtMi
 	
 	//Route::post('vehicles/{user}', []); // Vytvoreni noveho vozidla uzivatele
 	
-	
 	//Route::get('/user', [AuthController::class, 'user']);
 	Route::post('/user/role', [AuthController::class, 'setRole']); // Zmena role
 	Route::get('/user/role', [AuthController::class, 'role']); // Vypis aktualni role (je i v tokenu)
 	Route::get('/user/roles', [AuthController::class, 'roles']); // Vypis dostupnych roli (jsou i v tokenu)
 	
+	// Records
+	Route::get('/vehicles/{vehicle}/records', [RecordController::class, 'index']);
+	Route::post('/vehicles/{vehicle}/records', [RecordController::class, 'store']);
+	Route::patch('/records/{record}', [RecordController::class, 'update']);
+	Route::delete('records/{record}', [RecordController::class, 'destroy']);
+	
+	// RecordTypes
+	Route::get('/record-types', [RecordTypeController::class, 'index']);
 	
 	// USERS
 	/*Route::middleware(AdminOrTechnicianMiddleware::class)->group(function () {

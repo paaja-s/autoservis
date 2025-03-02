@@ -270,6 +270,193 @@
                 }
             }
         },
+        "/api/vehicles/{vehicle}/records": {
+            "get": {
+                "tags": [
+                    "Records"
+                ],
+                "summary": "Get a list of all the records for vehicle",
+                "description": "Returns a list of all the records for vehicle",
+                "operationId": "getRecors",
+                "parameters": [
+                    {
+                        "name": "vehicle",
+                        "in": "path",
+                        "description": "Vehicle ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Record"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Records"
+                ],
+                "summary": "Create a new record",
+                "description": "Returns new vehicle record",
+                "operationId": "storeRecord",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Record"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Record"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/records/{record}": {
+            "delete": {
+                "tags": [
+                    "Records"
+                ],
+                "summary": "Deleting of existing record",
+                "operationId": "deleteRecord",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "in": "path",
+                        "description": "Record ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Record is deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Records"
+                ],
+                "summary": "Patching of existing vehicle record",
+                "operationId": "patchRecord",
+                "parameters": [
+                    {
+                        "name": "Record",
+                        "in": "path",
+                        "description": "Record ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Record"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Record"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized"
+                    }
+                }
+            }
+        },
+        "/api/record-types": {
+            "get": {
+                "tags": [
+                    "Records"
+                ],
+                "summary": "Get a list of all the record types",
+                "description": "Returns a list of all the record types",
+                "operationId": "getRecordTypes",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RecordType"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
         "/api/users": {
             "get": {
                 "tags": [
@@ -793,6 +980,76 @@
     },
     "components": {
         "schemas": {
+            "Record": {
+                "title": "Record",
+                "description": "Record for vehicle",
+                "properties": {
+                    "id": {
+                        "description": "ID záznamu",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "vehicle_id": {
+                        "description": "ID vozidla",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "status": {
+                        "description": "Status záznamu",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "record_type_id": {
+                        "description": "ID typu záznamu",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "description": "Nadpis záznamu",
+                        "type": "string",
+                        "example": "STK"
+                    },
+                    "text": {
+                        "description": "Text záznamu",
+                        "type": "string",
+                        "example": "Provedena OK."
+                    },
+                    "date": {
+                        "description": "Datum záznamu",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-02-25"
+                    },
+                    "createdAt": {
+                        "description": "Datum a cas vytvoreni",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "description": "Datum a cas upravy",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "RecordType": {
+                "title": "Record type",
+                "description": "Type of record",
+                "properties": {
+                    "id": {
+                        "description": "ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Název typu",
+                        "type": "string",
+                        "example": "Emise"
+                    }
+                },
+                "type": "object"
+            },
             "Role": {
                 "title": "Role",
                 "description": "User's role",
@@ -1386,6 +1643,10 @@
         {
             "name": "User",
             "description": "User"
+        },
+        {
+            "name": "Records",
+            "description": "Records"
         },
         {
             "name": "Vehicles",

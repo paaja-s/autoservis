@@ -7,6 +7,7 @@ use App\Models\Record;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\RecordType;
 
 return new class extends Migration
 {
@@ -38,18 +39,25 @@ return new class extends Migration
 		 * Kazda pravidelna udalost je navazana na tenanta|uzivatele|vozidlo
 		 */
 		/*Schema::create('single_events', function (Blueprint $table) {
-			
+		
 		});*/
 		
-		/* Tabulka zaznamu k vozidlu - opravy, servisy, STK,...
-		 * Kazdy zaznam je navazan na vozidlo
+		/**
+		 * Tabulka typu zaznamu
 		 */
+		Schema::create('record_types', function (Blueprint $table) {
+			$table->id();
+			$table->string('name');
+		});
 		
+		/* Tabulka zaznamu k vozidlu - opravy, servisy, STK,...
+		 * Kazdy zaznam je navazan na vozidlo a na record_type
+		 */
 		Schema::create('records', function (Blueprint $table) {
 			$table->id();
 			$table->foreignIdFor(Vehicle::class)->onDelete('cascade'); // Vazba na registrovany vuz
 			$table->integer('status')->default(0); // Status 0 - zakladni, 1 - precteny
-			$table->integer('type')->nullable(); // Typ 1 STK, 2 servis, 3 Inspekce, 4 Oprava, 5 Hlaseni km
+			$table->foreignIdFor(RecordType::class)->onDelete('cascade'); // Typ 1 STK, 2 servis, 3 Inspekce, 4 Oprava, 5 Hlaseni km
 			$table->string('title'); // Nadpis
 			$table->string('text'); // Hlavni text
 			$table->date('date'); // Datum
@@ -75,7 +83,8 @@ return new class extends Migration
 	public function down(): void
 	{
 		Schema::dropIfExists('regular_events');
-		Schema::dropIfExists('records');
+		Schema::dropIfExists('record_types');
 		Schema::dropIfExists('odos');
+		Schema::dropIfExists('records');
 	}
 };

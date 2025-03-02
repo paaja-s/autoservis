@@ -17,8 +17,9 @@ class RecordFactory extends Factory
 	public function definition(): array
 	{
 		return [
+			'vehicle_id' => 1,
 			'status' => 0,
-			'type' => 1,
+			'record_type_id' => 1,
 			'title' => '',
 			'text' =>'',
 			'date' => '',
