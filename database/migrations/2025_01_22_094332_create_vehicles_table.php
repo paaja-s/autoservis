@@ -17,13 +17,17 @@ return new class extends Migration {
 		Schema::create('vehicles', function (Blueprint $table) {
 			$table->id(); // Adds an auto-incrementing primary key column
 			$table->foreignIdFor(User::class)->onDelete('cascade'); // Vazba na uzivatele
-			$table->string('registration')->unique(); // Registracni znacka, unkatni
-			$table->integer('active')->default(1); // Aktivni
-			$table->integer('pcv')->nullable();
-			$table->string('typ', 34)->nullable();
-			$table->string('vin', 17)->nullable();
-			$table->string('cislo_tp', 8)->nullable();
-			$table->string('cislo_orv', 9)->nullable();
+			$table->boolean('assigned')->default(true); // Prirazene true / Neprirazene false
+			$table->boolean('deleted')->default(false); // Smazane true / nesmazane false
+			$table->string('licence_plate', 10)->unique(); // Registracni znacka, unikatni
+			$table->integer('cnv')->nullable(); // Pocitacove cislo vozidla
+			$table->string('vin', 17)->nullable(); // VIN
+			$table->string('brand', 6)->nullable(); // Tovární značka
+			$table->string('color', 21)->nullable(); // Barva
+			$table->integer('year_of_manufacture')->nullable(); // Rok vyroby
+			$table->string('technical_certificate_number', 8)->nullable(); // Číslo posledního technického průkazu
+			$table->string('registration_certificate_number', 9)->nullable(); // Číslo posledního osvědčení o technickém průkazu
+			$table->string('type', 34)->nullable(); // Typove oznaceni vozidla
 			$table->timestamps();
 		});
 		
@@ -44,6 +48,7 @@ return new class extends Migration {
 	public function down()
 	{
 		Schema::dropIfExists('vehicles');
+		Schema::dropIfExists('vehicle_changes');
 	}
 };
 

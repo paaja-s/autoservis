@@ -18,17 +18,17 @@ class UserService
 			RoleEnum::Admin => User::where('tenant_id', $tenant->id)
 			->whereHas('roles', function ($query) {
 				//$query->whereIn('name', [RoleEnum::Technician->name, RoleEnum::Customer->name]);
-				$query->whereIn('id', [RoleEnum::Technician->value, RoleEnum::Customer->value]);
+				$query->whereIn('id', [RoleEnum::Technician->value, RoleEnum::Customer->value])->where('deleted', false);
 			})
 			->distinct()
 			->get(),
 			RoleEnum::Technician => User::where('tenant_id', $tenant->id)
 			->whereHas('roles', function ($query) {
-				$query->where('id', RoleEnum::Customer->value);
+				$query->where('id', RoleEnum::Customer->value)->where('deleted', false);
 			})
 			->distinct()
 			->get(),
-			RoleEnum::Customer => User::where('id', Auth::id())->get(),
+			RoleEnum::Customer => User::where('id', Auth::id())->where('deleted', false)->get(),
 			default => collect(),
 		};
 	}
@@ -46,7 +46,6 @@ class UserService
 		$availableRoles = match ($userRole) {
 			RoleEnum::Superadmin => [RoleEnum::Admin],
 			RoleEnum::Admin => [RoleEnum::Technician, RoleEnum::Customer],
-			RoleEnum::Admin => collection(RoleEnum::Technician, RoleEnum::Customer),
 			RoleEnum::Technician => [RoleEnum::Customer],
 			default => [],
 		};

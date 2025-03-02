@@ -14,7 +14,7 @@ class Odo extends Model
 	use CamelCaseAttributes, SnakeCaseAttributes; // Prvody atributu na CamelCase a zpatky na SnakeCase
 	
 	protected $fillable = [
-		'message_id',
+		'record_id',
 		'odo',
 		];
 	

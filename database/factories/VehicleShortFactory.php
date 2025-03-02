@@ -18,13 +18,16 @@ class VehicleShortFactory extends Factory
 	{
 		return [
 			'user_id' => 1,
-			'registration' => null,
-			'active' => 1,
-			'pcv' => 0,
-			'typ' => null,
-			'vin' => null,
-			'cislo_tp' => null,
-			'cislo_orv' => null,
+			'assigned' => true,
+			'deleted' => false,
+			'licence_plate' => '',
+			'cnv' => null,
+			'vin' => '',
+			'brand' => '',
+			'color' => '',
+			'year_of_manufacture' => null,
+			'technical_certificate_number' => null,
+			'registration_certificate_number' => null,
 		];
 	}
 }

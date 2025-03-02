@@ -31,7 +31,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  *     @OA\Property(property="phone", type="string", example="+420777521456"), 
  *     @OA\Property(property="email", type="string", example="admin@examle.com"),
  *     @OA\Property(property="emailVerifiedAt", type="data", example="2025-01-16T13:40:05.000000Z"),
- *     @OA\Property(property="active", type="integer", example=1),
+ *     @OA\Property(property="deleted", type="boolean", example=false),
  *     @OA\Property(property="createdAt", type="data", example="2025-01-16T13:40:05.000000Z"),
  *     @OA\Property(property="updatedAt", type="data", example="2025-01-16T13:40:05.000000Z"),
  * )
@@ -55,7 +55,7 @@ class User extends Authenticatable implements JWTSubject
 		'phone',
 		'email',
 		'password',
-		'active',
+		'deleted',
 		'last_role_id',
 	];
 

@@ -17,7 +17,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 	*     @OA\Property(property="id", type="integer", example=1, description="Vehicle change id"),
 	*     @OA\Property(property="vehicle_id", type="integer", example=1, description="Vehicle id"),
 	*     @OA\Property(property="name", type="string", example=3, description="Neme of changed property"),
-	*     @OA\Property(property="value", type="string", description="Value of changed property")
+	*     @OA\Property(property="value", type="string", description="Value of changed property"),
+	*     @OA\Property(property="createdAt", type="datetime", description="Datum a cas vytvoreni"),
+ *     	@OA\Property(property="updatedAt", type="datetime", description="Datum a cas upravy")
 	* )
 	*/
 class VehicleChanges extends Model

@@ -12,7 +12,7 @@ class VehicleService
 		Log::debug(__METHOD__.($user?' User '.$user->id:' No user'));
 		$user = $this->getUser($user);
 		// I admin dostane jen svoje vozidla, na zakaznicka se diva prostrednictvim volby zakaznika
-		return $user->vehicles()->get();
+		return $user->vehicles()->where('deleted', false)->get();
 	}
 	
 	/**

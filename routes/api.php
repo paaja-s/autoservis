@@ -40,12 +40,12 @@ Route::group(['middleware' => [HandleCors::class, TenantMiddleware::class, JwtMi
 	
 	//Route::post('vehicles/{user}', []); // Vytvoreni noveho vozidla uzivatele
 	
-	/*
-	Route::get('/user', [AuthController::class, 'user']);
-	Route::post('/user/role', [AuthController::class, 'setRole']);
-	Route::get('/user/role', [AuthController::class, 'role']);
-	Route::get('/user/roles', [AuthController::class, 'roles']);
-	*/
+	
+	//Route::get('/user', [AuthController::class, 'user']);
+	Route::post('/user/role', [AuthController::class, 'setRole']); // Zmena role
+	Route::get('/user/role', [AuthController::class, 'role']); // Vypis aktualni role (je i v tokenu)
+	Route::get('/user/roles', [AuthController::class, 'roles']); // Vypis dostupnych roli (jsou i v tokenu)
+	
 	
 	// USERS
 	/*Route::middleware(AdminOrTechnicianMiddleware::class)->group(function () {

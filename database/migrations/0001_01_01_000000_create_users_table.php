@@ -17,7 +17,7 @@ return new class extends Migration
 			$table->id();
 			$table->string('name');
 			$table->string('domain');
-			$table->integer('active');
+			$table->boolean('deleted')->default(false); // Smazany
 			$table->timestamps();
 		});
 		
@@ -41,7 +41,7 @@ return new class extends Migration
 			//$table->date('birth')->nullable(); // Datum narození (volitelně)
 			$table->string('password');
 			$table->rememberToken();
-			$table->integer('active')->default(1); // Aktivní účet (výchozí: 1 = aktivní)
+			$table->boolean('deleted')->default(false); // Smazany
 			$table->foreignId('last_role_id')->nullable()->constrained('roles')->nullOnDelete(); // Posledni pouzita role, muze byt NULL
 			$table->timestamps();
 			$table->unique(['tenant_id', 'login_name']);
@@ -78,5 +78,6 @@ return new class extends Migration
 		Schema::dropIfExists('users');
 		Schema::dropIfExists('password_reset_tokens');
 		Schema::dropIfExists('sessions');
+		Schema::dropIfExists('tenants');
 	}
 };

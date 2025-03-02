@@ -105,6 +105,8 @@ class UserController extends Controller
 				// User
 				'firstName'=> ['required', 'string', 'max:255'],
 				'lastName' => ['required', 'string', 'max:255'],
+				//'companyName' => ['optional', 'string', 'max:255'],
+				//'isCompany' => ['optional',],
 				'loginName' => ['required',
 					'string',
 					'max:255',
@@ -247,7 +249,7 @@ class UserController extends Controller
 	 * @param Request $request
 	 * @return unknown
 	 */
-	public function update(Request $request, User $user)
+	public function put(Request $request, User $user)
 	{
 		$tenantManager = app('TenantManager');
 		$tenant = $tenantManager->getTenant();
@@ -340,7 +342,7 @@ class UserController extends Controller
 	 * @param Request $request
 	 * @return unknown
 	 */
-	public function partialUpdate(Request $request, User $user)
+	public function patch(Request $request, User $user)
 	{
 		$tenantManager = app('TenantManager');
 		$tenant = $tenantManager->getTenant();
@@ -433,8 +435,7 @@ class UserController extends Controller
 		// TODO Autorizace prav k uzivateli
 		
 		// Uzivatel se nemaze, jen se prevede do stavu Smazan
-		$user->active = 2;
-		$user->save();
+		$user->update(['deleted' => true]);
 		
 		return response()->json(['message' => 'User is deactivated']);
 	}

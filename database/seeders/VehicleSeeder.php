@@ -19,67 +19,83 @@ class VehicleSeeder extends Seeder
 		$user = User::where('email', 'paaja_s@atlas.cz')->first();
 		$vehicle = VehicleShort::factory()->create([
 			'user_id' =>$user,
-			'registration' => '1E05584',
-			'active' => 1,
-			'pcv' => 192,
-			'typ' => 'ŠKODA 120 L TMB12M00L / TMB12M00L',
+			'assigned' => true,
+			'deleted' => false,
+			'licence_plate' => '1E05584',
+			'cnv' => 192,
 			'vin' => '2084597',
-			'cislo_tp' => 'AF192231',
-			'cislo_orv' => 'AAK900308',
+			'brand' => 'ŠKODA',
+			'color' => 'ZLATÁ',
+			'year_of_manufacture' => 1979,
+			'technical_certificate_number' => 'AF192231',
+			'registration_certificate_number' => 'AAK900308',
+			'type' => 'ŠKODA 120 L TMB12M00L / TMB12M00L',
 		]);
 		
 		// Vehicle 2, user 1
 		$vehicle = VehicleShort::factory()->create([
 			'user_id' =>$user,
-			'registration' => '3E17741',
-			'active' => 1,
-			'pcv' => 201,
-			'typ' => 'ŠKODA 120 L TMB12M00L / TMB12M00L',
+			'assigned' => true,
+			'deleted' => false,
+			'licence_plate' => '3E17741',
+			'cnv' => 201,
 			'vin' => 'TMB12M00LJ3680133',
-			'cislo_tp' => 'AI666230',
-			'cislo_orv' => 'BAD066364',
+			'brand' => 'ŠKODA',
+			'color' => 'ŠEDÁ-ZÁKLADNÍ',
+			'year_of_manufacture' => 1988,
+			'technical_certificate_number' => 'AI666230',
+			'registration_certificate_number' => 'BAD066364',
+			'type' => 'ŠKODA 120 L TMB12M00L / TMB12M00L',
 		]);
 		
 		// Vehicle 3, user 2
 		$user = User::where([['first_name', 'Petr'], ['last_name', 'Komárek']])->first();
 		$vehicle = VehicleShort::factory()->create([
 			'user_id' =>$user,
-			'registration' => 'PU4322',
-			'active' => 1,
-			'pcv' => 203,
-			'typ' => 'ŠKODA 120 L TMB12M00L / TMB12M00L',
+			'assigned' => true,
+			'deleted' => false,
+			'licence_plate' => 'PU4322',
+			'cnv' => 203,
 			'vin' => '3674699',
-			'cislo_tp' => 'AI663915',
-			'cislo_orv' => NULL,
+			'brand' => 'ŠKODA',
+			'color' => 'ŠEDÁ-ZÁKLADNÍ',
+			'year_of_manufacture' => 1988,
+			'technical_certificate_number' => 'AI663915',
+			'registration_certificate_number' => NULL,
+			'type' => 'ŠKODA 120 L TMB12M00L / TMB12M00L',
 		]);
 		
 		VehicleChanges::factory()->create([
 			'vehicle_id' => $vehicle,
-			'name' => 'cisloOrv',
+			'name' => 'registrationCertificateNumber',
 			'value' => 'AKB558852',
 			]);
 		
 		// Vehicle 4, user 2 - vozidlo ktere neni v registru (napr. historicke, ci uplne nove)
 		$vehicle = VehicleShort::factory()->create([
 			'user_id' =>$user,
-			'registration' => 'PU1041',
-			'active' => 1,
-			'pcv' => null,
-			'typ' => 'ŠKODA 120 L TMB12M00L / TMB12M00L',
+			'assigned' => true,
+			'deleted' => false,
+			'licence_plate' => 'PU1041',
+			'cnv' => NULL,
 			'vin' => '111501',
-			'cislo_tp' => 'AA524741',
-			'cislo_orv' => 'AC5241221',
+			'brand' => 'ŠKODA',
+			'color' => 'ČERVENÁ',
+			'year_of_manufacture' => 1962,
+			'technical_certificate_number' => 'AA524741',
+			'registration_certificate_number' => 'AC5241221',
+			'type' => 'ŠKODA 1000MB',
 		]);
 		
 		VehicleChanges::factory()->create([
 			'vehicle_id' => $vehicle,
 			'name' => 'datum1Registrace',
-			'value' => '1.2.1961',
+			'value' => '1.2.1963',
 		]);
 		VehicleChanges::factory()->create([
 			'vehicle_id' => $vehicle,
 			'name' => 'datum1RegistraceCr',
-			'value' => '1.2.1961',
+			'value' => '1.2.1963',
 		]);
 		VehicleChanges::factory()->create([
 			'vehicle_id' => $vehicle,
@@ -105,13 +121,17 @@ class VehicleSeeder extends Seeder
 		// Vehicle 5, user 2
 		VehicleShort::factory()->create([
 			'user_id' =>$user,
-			'registration' => '4E39911',
-			'active' => 1,
-			'pcv' => 221,
-			'typ' => 'ŠKODA 120 L TMB12M00L / TMB12M00L',
+			'assigned' => true,
+			'deleted' => false,
+			'licence_plate' => '',
+			'cnv' => 221,
 			'vin' => 'TMB12M00LH3445469',
-			'cislo_tp' => 'AI359558',
-			'cislo_orv' => 'AAK555483',
+			'brand' => 'ŠKODA',
+			'color' => 'BÍLÁ',
+			'year_of_manufacture' => 1987,
+			'technical_certificate_number' => 'AI359558',
+			'registration_certificate_number' => 'AAK555483',
+			'type' => 'ŠKODA 120 L TMB12M00L / TMB12M00L',
 		]);
 	}
 }

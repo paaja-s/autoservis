@@ -20,7 +20,7 @@ class TenantFactory extends Factory
 			//'uuid' => Str::uuid()->toString(),
 			'name' => '',
 			'domain' => '',
-			'active' => 1,
+			'deleted' => false,
 		];
 	}
 }
