@@ -647,23 +647,26 @@ class VehicleController extends Controller
 	
 	public function search(Request $request)
 	{
-		//$tenantManager = app('TenantManager');
-		//$tenant = $tenantManager->getTenant();
-		$query = $request->query('query');
+		$tenantManager = app('TenantManager');
+		$tenant = $tenantManager->getTenant();
+		$queryString = $request->query('query');
 		
-		if (!$query) {
+		if (!$queryString) {
 			return response()->json(['error' => 'Query parameter is required'], 400);
 		}
 		
 		// Hledání v registru (externí API)
 		$registrDatasource = new RegistrDatasource();
-		$registrResult = $registrDatasource->getVehicleDataByVin($query);
+		$registrResult = $registrDatasource->getVehicleDataByVin($queryString);
 		
 		// Hledání v autoservisu (podle VIN i registrační značky)
-		// TODO pridat omezeni dle Tenant/user
-		$servisResult = VehicleShort::where('vin', 'like', $query . '%')
-		->orWhere('licence_plate', 'like', $query . '%')
-		->get();
+		$servisResult = $tenant->users()
+		->withWhereHas('vehicles', function ($query) use ($queryString) {
+			$query->where('vin',  'like', $queryString . '%')
+			->orWhere('licence_plate', 'like', $queryString . '%');
+		})
+		->get()
+		->flatMap->vehicles;
 		
 		return response()->json([
 			'registr' =>$registrResult ? $registrResult : [],

@@ -115,6 +115,11 @@ class User extends Authenticatable implements JWTSubject
 		return $this->role?->id === RoleEnum::Customer->value;
 	}
 	
+	public function tenant(): BelongsTo
+	{
+		return $this->belongsTo(Tenant::class);
+	}
+	
 	public function vehicles(): HasMany
 	{
 		return $this->hasMany(Vehicle::class);

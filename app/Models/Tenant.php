@@ -20,5 +20,8 @@ class Tenant extends Model
 		'active',
 	];
 	
-	
+	public function users()
+	{
+		return $this->hasMany(User::class, 'tenant_id');
+	}
 }
